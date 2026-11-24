@@ -1,0 +1,2839 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="MOCBREWModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Accounts">
+          <Key>
+            <PropertyRef Name="AccountId" />
+          </Key>
+          <Property Name="AccountId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+          <Property Name="Username" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordHash" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="100" />
+          <Property Name="Phone" Type="varchar" MaxLength="15" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="EmployeeCode" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="Categories">
+          <Key>
+            <PropertyRef Name="CategoryId" />
+          </Key>
+          <Property Name="CategoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CategoryName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="ImageUrl" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ParentCategoryId" Type="int" />
+        </EntityType>
+        <EntityType Name="Customers">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Phone" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="100" />
+          <Property Name="Address" Type="nvarchar" MaxLength="500" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Ingredients">
+          <Key>
+            <PropertyRef Name="IngredientId" />
+          </Key>
+          <Property Name="IngredientId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IngredientName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CurrentStock" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="MinimumStock" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InventoryStocktakes">
+          <Key>
+            <PropertyRef Name="StocktakeId" />
+          </Key>
+          <Property Name="StocktakeId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="AccountId" Type="int" Nullable="false" />
+          <Property Name="SystemStock" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="ActualStock" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="Difference" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="StocktakeDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="TransactionId" Type="bigint" />
+          <Property Name="Note" Type="nvarchar" MaxLength="1000" />
+          <Property Name="SessionId" Type="bigint" />
+        </EntityType>
+        <EntityType Name="InventoryStocktakeSessions">
+          <Key>
+            <PropertyRef Name="SessionId" />
+          </Key>
+          <Property Name="SessionId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StocktakeCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="AccountId" Type="int" Nullable="false" />
+          <Property Name="StocktakeDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Note" Type="nvarchar" MaxLength="1000" />
+        </EntityType>
+        <EntityType Name="InventoryTransactions">
+          <Key>
+            <PropertyRef Name="TransactionId" />
+          </Key>
+          <Property Name="TransactionId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="AccountId" Type="int" />
+          <Property Name="TransactionType" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="TransactionDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ReferenceCode" Type="varchar" MaxLength="50" />
+          <Property Name="Note" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="OrderDetails">
+          <Key>
+            <PropertyRef Name="OrderDetailId" />
+          </Key>
+          <Property Name="OrderDetailId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="ProductSizeId" Type="int" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="SizeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="UnitPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="Note" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="OrderDetailToppings">
+          <Key>
+            <PropertyRef Name="OrderDetailToppingId" />
+          </Key>
+          <Property Name="OrderDetailToppingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderDetailId" Type="int" Nullable="false" />
+          <Property Name="ToppingId" Type="int" Nullable="false" />
+          <Property Name="ToppingName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="UnitPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderPromotions">
+          <Key>
+            <PropertyRef Name="OrderPromotionId" />
+          </Key>
+          <Property Name="OrderPromotionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+          <Property Name="PromotionId" Type="int" Nullable="false" />
+          <Property Name="DiscountAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderRequests">
+          <Key>
+            <PropertyRef Name="RequestId" />
+          </Key>
+          <Property Name="RequestId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+          <Property Name="RequestType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="RequestedByAccountId" Type="int" Nullable="false" />
+          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="RequestStatus" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="RequestedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ReviewedByAccountId" Type="int" />
+          <Property Name="ReviewedAt" Type="datetime2" Precision="7" />
+          <Property Name="ReviewNote" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Orders">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderCode" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="AccountId" Type="int" />
+          <Property Name="ReceiverName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ReceiverPhone" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="DeliveryAddress" Type="nvarchar" MaxLength="500" />
+          <Property Name="OrderDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="SubTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DiscountAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ShippingFee" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TotalAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PaymentMethod" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PaymentStatus" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="OrderStatus" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="Note" Type="nvarchar" MaxLength="500" />
+          <Property Name="OrderSource" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="FulfillmentMethod" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderStatusHistories">
+          <Key>
+            <PropertyRef Name="HistoryId" />
+          </Key>
+          <Property Name="HistoryId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+          <Property Name="AccountId" Type="int" />
+          <Property Name="OldStatus" Type="nvarchar" MaxLength="30" />
+          <Property Name="NewStatus" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="Note" Type="nvarchar" MaxLength="500" />
+          <Property Name="ChangedAt" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Permissions">
+          <Key>
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="PermissionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PermissionCode" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="PermissionName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Products">
+          <Key>
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="ProductId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CategoryId" Type="int" Nullable="false" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ImageUrl" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsFeatured" Type="bit" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductSizes">
+          <Key>
+            <PropertyRef Name="ProductSizeId" />
+          </Key>
+          <Property Name="ProductSizeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="SizeId" Type="int" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IsAvailable" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductToppings">
+          <Key>
+            <PropertyRef Name="ProductId" />
+            <PropertyRef Name="ToppingId" />
+          </Key>
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="ToppingId" Type="int" Nullable="false" />
+          <Property Name="IsAvailable" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Promotions">
+          <Key>
+            <PropertyRef Name="PromotionId" />
+          </Key>
+          <Property Name="PromotionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PromotionCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="PromotionName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="DiscountType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="DiscountValue" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MinimumOrderValue" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MaximumDiscount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="StartDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="EndDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PurchaseReceiptDetails">
+          <Key>
+            <PropertyRef Name="PurchaseReceiptDetailId" />
+          </Key>
+          <Property Name="PurchaseReceiptDetailId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PurchaseReceiptId" Type="int" Nullable="false" />
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="UnitPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ExpiryDate" Type="date" />
+        </EntityType>
+        <EntityType Name="PurchaseReceipts">
+          <Key>
+            <PropertyRef Name="PurchaseReceiptId" />
+          </Key>
+          <Property Name="PurchaseReceiptId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ReceiptCode" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="SupplierId" Type="int" Nullable="false" />
+          <Property Name="AccountId" Type="int" Nullable="false" />
+          <Property Name="ReceiptDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="TotalAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Note" Type="nvarchar" MaxLength="500" />
+          <Property Name="Status" Type="nvarchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RecipeDetails">
+          <Key>
+            <PropertyRef Name="RecipeDetailId" />
+          </Key>
+          <Property Name="RecipeDetailId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecipeId" Type="int" Nullable="false" />
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="QuantityRequired" Type="decimal" Precision="18" Scale="3" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Recipes">
+          <Key>
+            <PropertyRef Name="RecipeId" />
+          </Key>
+          <Property Name="RecipeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductSizeId" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RolePermissions">
+          <Key>
+            <PropertyRef Name="RoleId" />
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="RoleId" Type="int" Nullable="false" />
+          <Property Name="PermissionId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sizes">
+          <Key>
+            <PropertyRef Name="SizeId" />
+          </Key>
+          <Property Name="SizeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SizeName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SupplierIngredients">
+          <Key>
+            <PropertyRef Name="SupplierIngredientId" />
+          </Key>
+          <Property Name="SupplierIngredientId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SupplierId" Type="int" Nullable="false" />
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Suppliers">
+          <Key>
+            <PropertyRef Name="SupplierId" />
+          </Key>
+          <Property Name="SupplierId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SupplierName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Phone" Type="varchar" MaxLength="15" />
+          <Property Name="Email" Type="varchar" MaxLength="100" />
+          <Property Name="Address" Type="nvarchar" MaxLength="500" />
+          <Property Name="TaxCode" Type="varchar" MaxLength="50" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SystemLogs">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountId" Type="int" />
+          <Property Name="LogType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ActionCode" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="2000" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Toppings">
+          <Key>
+            <PropertyRef Name="ToppingId" />
+          </Key>
+          <Property Name="ToppingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ToppingName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ImageUrl" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserPermissions">
+          <Key>
+            <PropertyRef Name="UserPermissionId" />
+          </Key>
+          <Property Name="UserPermissionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountId" Type="int" Nullable="false" />
+          <Property Name="PermissionId" Type="int" Nullable="false" />
+          <Property Name="GrantedByAccountId" Type="int" />
+          <Property Name="GrantedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="RevokedByAccountId" Type="int" />
+          <Property Name="RevokedAt" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="WorkShiftOrders">
+          <Key>
+            <PropertyRef Name="WorkShiftOrderId" />
+          </Key>
+          <Property Name="WorkShiftOrderId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ShiftId" Type="bigint" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WorkShifts">
+          <Key>
+            <PropertyRef Name="ShiftId" />
+          </Key>
+          <Property Name="ShiftId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ShiftCode" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="AccountId" Type="int" Nullable="false" />
+          <Property Name="StartTime" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="EndTime" Type="datetime2" Precision="7" />
+          <Property Name="OpeningCash" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ExpectedCash" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ActualCash" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CashDifference" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Note" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <Association Name="FK_Accounts_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Categories_ParentCategory">
+          <End Role="Categories" Type="Self.Categories" Multiplicity="0..1" />
+          <End Role="Categories1" Type="Self.Categories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="CategoryId" />
+            </Principal>
+            <Dependent Role="Categories1">
+              <PropertyRef Name="ParentCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="InventoryStocktakes" Type="Self.InventoryStocktakes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="InventoryStocktakes">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1" />
+          <End Role="InventoryStocktakes" Type="Self.InventoryStocktakes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="InventoryStocktakes">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Sessions">
+          <End Role="InventoryStocktakeSessions" Type="Self.InventoryStocktakeSessions" Multiplicity="0..1" />
+          <End Role="InventoryStocktakes" Type="Self.InventoryStocktakes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InventoryStocktakeSessions">
+              <PropertyRef Name="SessionId" />
+            </Principal>
+            <Dependent Role="InventoryStocktakes">
+              <PropertyRef Name="SessionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Transactions">
+          <End Role="InventoryTransactions" Type="Self.InventoryTransactions" Multiplicity="0..1" />
+          <End Role="InventoryStocktakes" Type="Self.InventoryStocktakes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InventoryTransactions">
+              <PropertyRef Name="TransactionId" />
+            </Principal>
+            <Dependent Role="InventoryStocktakes">
+              <PropertyRef Name="TransactionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakeSessions_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="InventoryStocktakeSessions" Type="Self.InventoryStocktakeSessions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="InventoryStocktakeSessions">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryTransactions_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="InventoryTransactions" Type="Self.InventoryTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="InventoryTransactions">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryTransactions_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1" />
+          <End Role="InventoryTransactions" Type="Self.InventoryTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="InventoryTransactions">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetails_Orders">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetails_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetails_ProductSizes">
+          <End Role="ProductSizes" Type="Self.ProductSizes" Multiplicity="0..1" />
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductSizes">
+              <PropertyRef Name="ProductSizeId" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="ProductSizeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetailToppings_OrderDetails">
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="1" />
+          <End Role="OrderDetailToppings" Type="Self.OrderDetailToppings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderDetails">
+              <PropertyRef Name="OrderDetailId" />
+            </Principal>
+            <Dependent Role="OrderDetailToppings">
+              <PropertyRef Name="OrderDetailId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetailToppings_Toppings">
+          <End Role="Toppings" Type="Self.Toppings" Multiplicity="1" />
+          <End Role="OrderDetailToppings" Type="Self.OrderDetailToppings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Toppings">
+              <PropertyRef Name="ToppingId" />
+            </Principal>
+            <Dependent Role="OrderDetailToppings">
+              <PropertyRef Name="ToppingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderPromotions_Orders">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
+          <End Role="OrderPromotions" Type="Self.OrderPromotions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderPromotions">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderPromotions_Promotions">
+          <End Role="Promotions" Type="Self.Promotions" Multiplicity="1" />
+          <End Role="OrderPromotions" Type="Self.OrderPromotions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Promotions">
+              <PropertyRef Name="PromotionId" />
+            </Principal>
+            <Dependent Role="OrderPromotions">
+              <PropertyRef Name="PromotionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderRequests_Orders">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
+          <End Role="OrderRequests" Type="Self.OrderRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderRequests">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderRequests_RequestedBy">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="OrderRequests" Type="Self.OrderRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="OrderRequests">
+              <PropertyRef Name="RequestedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderRequests_ReviewedBy">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="OrderRequests" Type="Self.OrderRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="OrderRequests">
+              <PropertyRef Name="ReviewedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Orders_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Orders_Customers">
+          <End Role="Customers" Type="Self.Customers" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistories_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="OrderStatusHistories" Type="Self.OrderStatusHistories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="OrderStatusHistories">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistories_Orders">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
+          <End Role="OrderStatusHistories" Type="Self.OrderStatusHistories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderStatusHistories">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_Categories">
+          <End Role="Categories" Type="Self.Categories" Multiplicity="1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="CategoryId" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductSizes_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="1" />
+          <End Role="ProductSizes" Type="Self.ProductSizes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="ProductSizes">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductSizes_Sizes">
+          <End Role="Sizes" Type="Self.Sizes" Multiplicity="1" />
+          <End Role="ProductSizes" Type="Self.ProductSizes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sizes">
+              <PropertyRef Name="SizeId" />
+            </Principal>
+            <Dependent Role="ProductSizes">
+              <PropertyRef Name="SizeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductToppings_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="1" />
+          <End Role="ProductToppings" Type="Self.ProductToppings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="ProductToppings">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductToppings_Toppings">
+          <End Role="Toppings" Type="Self.Toppings" Multiplicity="1" />
+          <End Role="ProductToppings" Type="Self.ProductToppings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Toppings">
+              <PropertyRef Name="ToppingId" />
+            </Principal>
+            <Dependent Role="ProductToppings">
+              <PropertyRef Name="ToppingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceiptDetails_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1" />
+          <End Role="PurchaseReceiptDetails" Type="Self.PurchaseReceiptDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="PurchaseReceiptDetails">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceiptDetails_Receipts">
+          <End Role="PurchaseReceipts" Type="Self.PurchaseReceipts" Multiplicity="1" />
+          <End Role="PurchaseReceiptDetails" Type="Self.PurchaseReceiptDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseReceipts">
+              <PropertyRef Name="PurchaseReceiptId" />
+            </Principal>
+            <Dependent Role="PurchaseReceiptDetails">
+              <PropertyRef Name="PurchaseReceiptId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceipts_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="PurchaseReceipts" Type="Self.PurchaseReceipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="PurchaseReceipts">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceipts_Suppliers">
+          <End Role="Suppliers" Type="Self.Suppliers" Multiplicity="1" />
+          <End Role="PurchaseReceipts" Type="Self.PurchaseReceipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Suppliers">
+              <PropertyRef Name="SupplierId" />
+            </Principal>
+            <Dependent Role="PurchaseReceipts">
+              <PropertyRef Name="SupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipeDetails_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1" />
+          <End Role="RecipeDetails" Type="Self.RecipeDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="RecipeDetails">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipeDetails_Recipes">
+          <End Role="Recipes" Type="Self.Recipes" Multiplicity="1" />
+          <End Role="RecipeDetails" Type="Self.RecipeDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipes">
+              <PropertyRef Name="RecipeId" />
+            </Principal>
+            <Dependent Role="RecipeDetails">
+              <PropertyRef Name="RecipeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Recipes_ProductSizes">
+          <End Role="ProductSizes" Type="Self.ProductSizes" Multiplicity="1" />
+          <End Role="Recipes" Type="Self.Recipes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductSizes">
+              <PropertyRef Name="ProductSizeId" />
+            </Principal>
+            <Dependent Role="Recipes">
+              <PropertyRef Name="ProductSizeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RolePermissions_Permissions">
+          <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
+          <End Role="RolePermissions" Type="Self.RolePermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permissions">
+              <PropertyRef Name="PermissionId" />
+            </Principal>
+            <Dependent Role="RolePermissions">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RolePermissions_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="RolePermissions" Type="Self.RolePermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="RolePermissions">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SupplierIngredients_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredients" Multiplicity="1" />
+          <End Role="SupplierIngredients" Type="Self.SupplierIngredients" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="SupplierIngredients">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SupplierIngredients_Suppliers">
+          <End Role="Suppliers" Type="Self.Suppliers" Multiplicity="1" />
+          <End Role="SupplierIngredients" Type="Self.SupplierIngredients" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Suppliers">
+              <PropertyRef Name="SupplierId" />
+            </Principal>
+            <Dependent Role="SupplierIngredients">
+              <PropertyRef Name="SupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SystemLogs_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="SystemLogs" Type="Self.SystemLogs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="SystemLogs">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="UserPermissions" Type="Self.UserPermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_GrantedBy">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="UserPermissions" Type="Self.UserPermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="GrantedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_Permissions">
+          <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
+          <End Role="UserPermissions" Type="Self.UserPermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permissions">
+              <PropertyRef Name="PermissionId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_RevokedBy">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="0..1" />
+          <End Role="UserPermissions" Type="Self.UserPermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="RevokedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkShiftOrders_Orders">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
+          <End Role="WorkShiftOrders" Type="Self.WorkShiftOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="WorkShiftOrders">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkShiftOrders_WorkShifts">
+          <End Role="WorkShifts" Type="Self.WorkShifts" Multiplicity="1" />
+          <End Role="WorkShiftOrders" Type="Self.WorkShiftOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkShifts">
+              <PropertyRef Name="ShiftId" />
+            </Principal>
+            <Dependent Role="WorkShiftOrders">
+              <PropertyRef Name="ShiftId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkShifts_Accounts">
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="1" />
+          <End Role="WorkShifts" Type="Self.WorkShifts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="WorkShifts">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MOCBREWModelStoreContainer">
+          <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ingredients" EntityType="Self.Ingredients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InventoryStocktakes" EntityType="Self.InventoryStocktakes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InventoryStocktakeSessions" EntityType="Self.InventoryStocktakeSessions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InventoryTransactions" EntityType="Self.InventoryTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderDetailToppings" EntityType="Self.OrderDetailToppings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderPromotions" EntityType="Self.OrderPromotions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderRequests" EntityType="Self.OrderRequests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderStatusHistories" EntityType="Self.OrderStatusHistories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductSizes" EntityType="Self.ProductSizes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductToppings" EntityType="Self.ProductToppings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Promotions" EntityType="Self.Promotions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseReceiptDetails" EntityType="Self.PurchaseReceiptDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseReceipts" EntityType="Self.PurchaseReceipts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecipeDetails" EntityType="Self.RecipeDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Recipes" EntityType="Self.Recipes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RolePermissions" EntityType="Self.RolePermissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sizes" EntityType="Self.Sizes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SupplierIngredients" EntityType="Self.SupplierIngredients" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Suppliers" EntityType="Self.Suppliers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SystemLogs" EntityType="Self.SystemLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Toppings" EntityType="Self.Toppings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserPermissions" EntityType="Self.UserPermissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WorkShiftOrders" EntityType="Self.WorkShiftOrders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WorkShifts" EntityType="Self.WorkShifts" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Accounts_Roles" Association="Self.FK_Accounts_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Categories_ParentCategory" Association="Self.FK_Categories_ParentCategory">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Categories1" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Accounts" Association="Self.FK_InventoryStocktakes_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="InventoryStocktakes" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Ingredients" Association="Self.FK_InventoryStocktakes_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="InventoryStocktakes" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Sessions" Association="Self.FK_InventoryStocktakes_Sessions">
+            <End Role="InventoryStocktakeSessions" EntitySet="InventoryStocktakeSessions" />
+            <End Role="InventoryStocktakes" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Transactions" Association="Self.FK_InventoryStocktakes_Transactions">
+            <End Role="InventoryTransactions" EntitySet="InventoryTransactions" />
+            <End Role="InventoryStocktakes" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakeSessions_Accounts" Association="Self.FK_InventoryStocktakeSessions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="InventoryStocktakeSessions" EntitySet="InventoryStocktakeSessions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryTransactions_Accounts" Association="Self.FK_InventoryTransactions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="InventoryTransactions" EntitySet="InventoryTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryTransactions_Ingredients" Association="Self.FK_InventoryTransactions_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="InventoryTransactions" EntitySet="InventoryTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetails_Orders" Association="Self.FK_OrderDetails_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetails_Products" Association="Self.FK_OrderDetails_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetails_ProductSizes" Association="Self.FK_OrderDetails_ProductSizes">
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetailToppings_OrderDetails" Association="Self.FK_OrderDetailToppings_OrderDetails">
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+            <End Role="OrderDetailToppings" EntitySet="OrderDetailToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetailToppings_Toppings" Association="Self.FK_OrderDetailToppings_Toppings">
+            <End Role="Toppings" EntitySet="Toppings" />
+            <End Role="OrderDetailToppings" EntitySet="OrderDetailToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderPromotions_Orders" Association="Self.FK_OrderPromotions_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderPromotions" EntitySet="OrderPromotions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderPromotions_Promotions" Association="Self.FK_OrderPromotions_Promotions">
+            <End Role="Promotions" EntitySet="Promotions" />
+            <End Role="OrderPromotions" EntitySet="OrderPromotions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderRequests_Orders" Association="Self.FK_OrderRequests_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderRequests" EntitySet="OrderRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderRequests_RequestedBy" Association="Self.FK_OrderRequests_RequestedBy">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="OrderRequests" EntitySet="OrderRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderRequests_ReviewedBy" Association="Self.FK_OrderRequests_ReviewedBy">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="OrderRequests" EntitySet="OrderRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Orders_Accounts" Association="Self.FK_Orders_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Orders_Customers" Association="Self.FK_Orders_Customers">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistories_Accounts" Association="Self.FK_OrderStatusHistories_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="OrderStatusHistories" EntitySet="OrderStatusHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistories_Orders" Association="Self.FK_OrderStatusHistories_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderStatusHistories" EntitySet="OrderStatusHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_Categories" Association="Self.FK_Products_Categories">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductSizes_Products" Association="Self.FK_ProductSizes_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductSizes_Sizes" Association="Self.FK_ProductSizes_Sizes">
+            <End Role="Sizes" EntitySet="Sizes" />
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductToppings_Products" Association="Self.FK_ProductToppings_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="ProductToppings" EntitySet="ProductToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductToppings_Toppings" Association="Self.FK_ProductToppings_Toppings">
+            <End Role="Toppings" EntitySet="Toppings" />
+            <End Role="ProductToppings" EntitySet="ProductToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceiptDetails_Ingredients" Association="Self.FK_PurchaseReceiptDetails_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="PurchaseReceiptDetails" EntitySet="PurchaseReceiptDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceiptDetails_Receipts" Association="Self.FK_PurchaseReceiptDetails_Receipts">
+            <End Role="PurchaseReceipts" EntitySet="PurchaseReceipts" />
+            <End Role="PurchaseReceiptDetails" EntitySet="PurchaseReceiptDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceipts_Accounts" Association="Self.FK_PurchaseReceipts_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="PurchaseReceipts" EntitySet="PurchaseReceipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceipts_Suppliers" Association="Self.FK_PurchaseReceipts_Suppliers">
+            <End Role="Suppliers" EntitySet="Suppliers" />
+            <End Role="PurchaseReceipts" EntitySet="PurchaseReceipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipeDetails_Ingredients" Association="Self.FK_RecipeDetails_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="RecipeDetails" EntitySet="RecipeDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipeDetails_Recipes" Association="Self.FK_RecipeDetails_Recipes">
+            <End Role="Recipes" EntitySet="Recipes" />
+            <End Role="RecipeDetails" EntitySet="RecipeDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Recipes_ProductSizes" Association="Self.FK_Recipes_ProductSizes">
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+            <End Role="Recipes" EntitySet="Recipes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RolePermissions_Permissions" Association="Self.FK_RolePermissions_Permissions">
+            <End Role="Permissions" EntitySet="Permissions" />
+            <End Role="RolePermissions" EntitySet="RolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RolePermissions_Roles" Association="Self.FK_RolePermissions_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="RolePermissions" EntitySet="RolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SupplierIngredients_Ingredients" Association="Self.FK_SupplierIngredients_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="SupplierIngredients" EntitySet="SupplierIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SupplierIngredients_Suppliers" Association="Self.FK_SupplierIngredients_Suppliers">
+            <End Role="Suppliers" EntitySet="Suppliers" />
+            <End Role="SupplierIngredients" EntitySet="SupplierIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SystemLogs_Accounts" Association="Self.FK_SystemLogs_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="SystemLogs" EntitySet="SystemLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_Accounts" Association="Self.FK_UserPermissions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_GrantedBy" Association="Self.FK_UserPermissions_GrantedBy">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_Permissions" Association="Self.FK_UserPermissions_Permissions">
+            <End Role="Permissions" EntitySet="Permissions" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_RevokedBy" Association="Self.FK_UserPermissions_RevokedBy">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkShiftOrders_Orders" Association="Self.FK_WorkShiftOrders_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="WorkShiftOrders" EntitySet="WorkShiftOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkShiftOrders_WorkShifts" Association="Self.FK_WorkShiftOrders_WorkShifts">
+            <End Role="WorkShifts" EntitySet="WorkShifts" />
+            <End Role="WorkShiftOrders" EntitySet="WorkShiftOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkShifts_Accounts" Association="Self.FK_WorkShifts_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="WorkShifts" EntitySet="WorkShifts" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MOCBREWModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="AccountId" />
+          </Key>
+          <Property Name="AccountId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="Int32" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FullName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="EmployeeCode" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Role" Relationship="Self.FK_Accounts_Roles" FromRole="Accounts" ToRole="Roles" />
+          <NavigationProperty Name="InventoryTransactions" Relationship="Self.FK_InventoryTransactions_Accounts" FromRole="Accounts" ToRole="InventoryTransactions" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Accounts" FromRole="Accounts" ToRole="Orders" />
+          <NavigationProperty Name="PurchaseReceipts" Relationship="Self.FK_PurchaseReceipts_Accounts" FromRole="Accounts" ToRole="PurchaseReceipts" />
+          <NavigationProperty Name="SystemLogs" Relationship="Self.FK_SystemLogs_Accounts" FromRole="Accounts" ToRole="SystemLogs" />
+          <NavigationProperty Name="UserPermissions" Relationship="Self.FK_UserPermissions_Accounts" FromRole="Accounts" ToRole="UserPermissions" />
+          <NavigationProperty Name="UserPermissions1" Relationship="Self.FK_UserPermissions_GrantedBy" FromRole="Accounts" ToRole="UserPermissions" />
+          <NavigationProperty Name="UserPermissions2" Relationship="Self.FK_UserPermissions_RevokedBy" FromRole="Accounts" ToRole="UserPermissions" />
+          <NavigationProperty Name="InventoryStocktakes" Relationship="MOCBREWModel.FK_InventoryStocktakes_Accounts" FromRole="Account" ToRole="InventoryStocktake" />
+          <NavigationProperty Name="InventoryStocktakeSessions" Relationship="MOCBREWModel.FK_InventoryStocktakeSessions_Accounts" FromRole="Account" ToRole="InventoryStocktakeSession" />
+          <NavigationProperty Name="OrderStatusHistories" Relationship="MOCBREWModel.FK_OrderStatusHistories_Accounts" FromRole="Account" ToRole="OrderStatusHistory" />
+          <NavigationProperty Name="OrderRequests" Relationship="MOCBREWModel.FK_OrderRequests_RequestedBy" FromRole="Account" ToRole="OrderRequest" />
+          <NavigationProperty Name="OrderRequests1" Relationship="MOCBREWModel.FK_OrderRequests_ReviewedBy" FromRole="Account" ToRole="OrderRequest" />
+          <NavigationProperty Name="WorkShifts" Relationship="MOCBREWModel.FK_WorkShifts_Accounts" FromRole="Account" ToRole="WorkShift" />
+        </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="CategoryId" />
+          </Key>
+          <Property Name="CategoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CategoryName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_Categories" FromRole="Categories" ToRole="Products" />
+          <Property Name="ParentCategoryId" Type="Int32" />
+          <NavigationProperty Name="Categories1" Relationship="MOCBREWModel.FK_Categories_ParentCategory" FromRole="Category" ToRole="Category1" />
+          <NavigationProperty Name="Category1" Relationship="MOCBREWModel.FK_Categories_ParentCategory" FromRole="Category1" ToRole="Category" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FullName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Customers" FromRole="Customers" ToRole="Orders" />
+        </EntityType>
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="IngredientId" />
+          </Key>
+          <Property Name="IngredientId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IngredientName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Unit" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CurrentStock" Type="Decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="MinimumStock" Type="Decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="InventoryTransactions" Relationship="Self.FK_InventoryTransactions_Ingredients" FromRole="Ingredients" ToRole="InventoryTransactions" />
+          <NavigationProperty Name="PurchaseReceiptDetails" Relationship="Self.FK_PurchaseReceiptDetails_Ingredients" FromRole="Ingredients" ToRole="PurchaseReceiptDetails" />
+          <NavigationProperty Name="RecipeDetails" Relationship="Self.FK_RecipeDetails_Ingredients" FromRole="Ingredients" ToRole="RecipeDetails" />
+          <NavigationProperty Name="InventoryStocktakes" Relationship="MOCBREWModel.FK_InventoryStocktakes_Ingredients" FromRole="Ingredient" ToRole="InventoryStocktake" />
+          <NavigationProperty Name="SupplierIngredients" Relationship="MOCBREWModel.FK_SupplierIngredients_Ingredients" FromRole="Ingredient" ToRole="SupplierIngredient" />
+        </EntityType>
+        <EntityType Name="InventoryTransaction">
+          <Key>
+            <PropertyRef Name="TransactionId" />
+          </Key>
+          <Property Name="TransactionId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="AccountId" Type="Int32" />
+          <Property Name="TransactionType" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ReferenceCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_InventoryTransactions_Accounts" FromRole="InventoryTransactions" ToRole="Accounts" />
+          <NavigationProperty Name="Ingredient" Relationship="Self.FK_InventoryTransactions_Ingredients" FromRole="InventoryTransactions" ToRole="Ingredients" />
+          <NavigationProperty Name="InventoryStocktakes" Relationship="MOCBREWModel.FK_InventoryStocktakes_Transactions" FromRole="InventoryTransaction" ToRole="InventoryStocktake" />
+        </EntityType>
+        <EntityType Name="OrderDetail">
+          <Key>
+            <PropertyRef Name="OrderDetailId" />
+          </Key>
+          <Property Name="OrderDetailId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="ProductSizeId" Type="Int32" />
+          <Property Name="ProductName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SizeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Order" Relationship="Self.FK_OrderDetails_Orders" FromRole="OrderDetails" ToRole="Orders" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_OrderDetails_Products" FromRole="OrderDetails" ToRole="Products" />
+          <NavigationProperty Name="ProductSize" Relationship="Self.FK_OrderDetails_ProductSizes" FromRole="OrderDetails" ToRole="ProductSizes" />
+          <NavigationProperty Name="OrderDetailToppings" Relationship="Self.FK_OrderDetailToppings_OrderDetails" FromRole="OrderDetails" ToRole="OrderDetailToppings" />
+        </EntityType>
+        <EntityType Name="OrderDetailTopping">
+          <Key>
+            <PropertyRef Name="OrderDetailToppingId" />
+          </Key>
+          <Property Name="OrderDetailToppingId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderDetailId" Type="Int32" Nullable="false" />
+          <Property Name="ToppingId" Type="Int32" Nullable="false" />
+          <Property Name="ToppingName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="OrderDetail" Relationship="Self.FK_OrderDetailToppings_OrderDetails" FromRole="OrderDetailToppings" ToRole="OrderDetails" />
+          <NavigationProperty Name="Topping" Relationship="Self.FK_OrderDetailToppings_Toppings" FromRole="OrderDetailToppings" ToRole="Toppings" />
+        </EntityType>
+        <EntityType Name="OrderPromotion">
+          <Key>
+            <PropertyRef Name="OrderPromotionId" />
+          </Key>
+          <Property Name="OrderPromotionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <Property Name="PromotionId" Type="Int32" Nullable="false" />
+          <Property Name="DiscountAmount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <NavigationProperty Name="Order" Relationship="Self.FK_OrderPromotions_Orders" FromRole="OrderPromotions" ToRole="Orders" />
+          <NavigationProperty Name="Promotion" Relationship="Self.FK_OrderPromotions_Promotions" FromRole="OrderPromotions" ToRole="Promotions" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderCode" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="AccountId" Type="Int32" />
+          <Property Name="ReceiverName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ReceiverPhone" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DeliveryAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="SubTotal" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DiscountAmount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ShippingFee" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TotalAmount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PaymentMethod" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PaymentStatus" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OrderStatus" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_Orders_Accounts" FromRole="Orders" ToRole="Accounts" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK_Orders_Customers" FromRole="Orders" ToRole="Customers" />
+          <NavigationProperty Name="OrderDetails" Relationship="Self.FK_OrderDetails_Orders" FromRole="Orders" ToRole="OrderDetails" />
+          <NavigationProperty Name="OrderPromotions" Relationship="Self.FK_OrderPromotions_Orders" FromRole="Orders" ToRole="OrderPromotions" />
+          <Property Name="OrderSource" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="FulfillmentMethod" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="OrderStatusHistories" Relationship="MOCBREWModel.FK_OrderStatusHistories_Orders" FromRole="Order" ToRole="OrderStatusHistory" />
+          <NavigationProperty Name="OrderRequests" Relationship="MOCBREWModel.FK_OrderRequests_Orders" FromRole="Order" ToRole="OrderRequest" />
+          <NavigationProperty Name="WorkShiftOrders" Relationship="MOCBREWModel.FK_WorkShiftOrders_Orders" FromRole="Order" ToRole="WorkShiftOrder" />
+        </EntityType>
+        <EntityType Name="Permission">
+          <Key>
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="PermissionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PermissionCode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PermissionName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="UserPermissions" Relationship="Self.FK_UserPermissions_Permissions" FromRole="Permissions" ToRole="UserPermissions" />
+          <NavigationProperty Name="Roles" Relationship="Self.RolePermissions" FromRole="Permissions" ToRole="Roles" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="ProductId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CategoryId" Type="Int32" Nullable="false" />
+          <Property Name="ProductName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsFeatured" Type="Boolean" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Category" Relationship="Self.FK_Products_Categories" FromRole="Products" ToRole="Categories" />
+          <NavigationProperty Name="OrderDetails" Relationship="Self.FK_OrderDetails_Products" FromRole="Products" ToRole="OrderDetails" />
+          <NavigationProperty Name="ProductSizes" Relationship="Self.FK_ProductSizes_Products" FromRole="Products" ToRole="ProductSizes" />
+          <NavigationProperty Name="ProductToppings" Relationship="Self.FK_ProductToppings_Products" FromRole="Products" ToRole="ProductToppings" />
+        </EntityType>
+        <EntityType Name="ProductSize">
+          <Key>
+            <PropertyRef Name="ProductSizeId" />
+          </Key>
+          <Property Name="ProductSizeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="SizeId" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IsAvailable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="OrderDetails" Relationship="Self.FK_OrderDetails_ProductSizes" FromRole="ProductSizes" ToRole="OrderDetails" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_ProductSizes_Products" FromRole="ProductSizes" ToRole="Products" />
+          <NavigationProperty Name="Size" Relationship="Self.FK_ProductSizes_Sizes" FromRole="ProductSizes" ToRole="Sizes" />
+          <NavigationProperty Name="Recipes" Relationship="Self.FK_Recipes_ProductSizes" FromRole="ProductSizes" ToRole="Recipes" />
+        </EntityType>
+        <EntityType Name="ProductTopping">
+          <Key>
+            <PropertyRef Name="ProductId" />
+            <PropertyRef Name="ToppingId" />
+          </Key>
+          <Property Name="ProductId" Type="Int32" Nullable="false" />
+          <Property Name="ToppingId" Type="Int32" Nullable="false" />
+          <Property Name="IsAvailable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_ProductToppings_Products" FromRole="ProductToppings" ToRole="Products" />
+          <NavigationProperty Name="Topping" Relationship="Self.FK_ProductToppings_Toppings" FromRole="ProductToppings" ToRole="Toppings" />
+        </EntityType>
+        <EntityType Name="Promotion">
+          <Key>
+            <PropertyRef Name="PromotionId" />
+          </Key>
+          <Property Name="PromotionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PromotionCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PromotionName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="DiscountType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DiscountValue" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MinimumOrderValue" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MaximumDiscount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="OrderPromotions" Relationship="Self.FK_OrderPromotions_Promotions" FromRole="Promotions" ToRole="OrderPromotions" />
+        </EntityType>
+        <EntityType Name="PurchaseReceiptDetail">
+          <Key>
+            <PropertyRef Name="PurchaseReceiptDetailId" />
+          </Key>
+          <Property Name="PurchaseReceiptDetailId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PurchaseReceiptId" Type="Int32" Nullable="false" />
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Ingredient" Relationship="Self.FK_PurchaseReceiptDetails_Ingredients" FromRole="PurchaseReceiptDetails" ToRole="Ingredients" />
+          <NavigationProperty Name="PurchaseReceipt" Relationship="Self.FK_PurchaseReceiptDetails_Receipts" FromRole="PurchaseReceiptDetails" ToRole="PurchaseReceipts" />
+        </EntityType>
+        <EntityType Name="PurchaseReceipt">
+          <Key>
+            <PropertyRef Name="PurchaseReceiptId" />
+          </Key>
+          <Property Name="PurchaseReceiptId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReceiptCode" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SupplierId" Type="Int32" Nullable="false" />
+          <Property Name="AccountId" Type="Int32" Nullable="false" />
+          <Property Name="ReceiptDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="TotalAmount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_PurchaseReceipts_Accounts" FromRole="PurchaseReceipts" ToRole="Accounts" />
+          <NavigationProperty Name="PurchaseReceiptDetails" Relationship="Self.FK_PurchaseReceiptDetails_Receipts" FromRole="PurchaseReceipts" ToRole="PurchaseReceiptDetails" />
+          <NavigationProperty Name="Supplier" Relationship="Self.FK_PurchaseReceipts_Suppliers" FromRole="PurchaseReceipts" ToRole="Suppliers" />
+        </EntityType>
+        <EntityType Name="RecipeDetail">
+          <Key>
+            <PropertyRef Name="RecipeDetailId" />
+          </Key>
+          <Property Name="RecipeDetailId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecipeId" Type="Int32" Nullable="false" />
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="QuantityRequired" Type="Decimal" Precision="18" Scale="3" Nullable="false" />
+          <NavigationProperty Name="Ingredient" Relationship="Self.FK_RecipeDetails_Ingredients" FromRole="RecipeDetails" ToRole="Ingredients" />
+          <NavigationProperty Name="Recipe" Relationship="Self.FK_RecipeDetails_Recipes" FromRole="RecipeDetails" ToRole="Recipes" />
+        </EntityType>
+        <EntityType Name="Recipe">
+          <Key>
+            <PropertyRef Name="RecipeId" />
+          </Key>
+          <Property Name="RecipeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductSizeId" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="ProductSize" Relationship="Self.FK_Recipes_ProductSizes" FromRole="Recipes" ToRole="ProductSizes" />
+          <NavigationProperty Name="RecipeDetails" Relationship="Self.FK_RecipeDetails_Recipes" FromRole="Recipes" ToRole="RecipeDetails" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Accounts" Relationship="Self.FK_Accounts_Roles" FromRole="Roles" ToRole="Accounts" />
+          <NavigationProperty Name="Permissions" Relationship="Self.RolePermissions" FromRole="Roles" ToRole="Permissions" />
+        </EntityType>
+        <EntityType Name="Size">
+          <Key>
+            <PropertyRef Name="SizeId" />
+          </Key>
+          <Property Name="SizeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SizeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="ProductSizes" Relationship="Self.FK_ProductSizes_Sizes" FromRole="Sizes" ToRole="ProductSizes" />
+        </EntityType>
+        <EntityType Name="Supplier">
+          <Key>
+            <PropertyRef Name="SupplierId" />
+          </Key>
+          <Property Name="SupplierId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SupplierName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="TaxCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="PurchaseReceipts" Relationship="Self.FK_PurchaseReceipts_Suppliers" FromRole="Suppliers" ToRole="PurchaseReceipts" />
+          <NavigationProperty Name="SupplierIngredients" Relationship="MOCBREWModel.FK_SupplierIngredients_Suppliers" FromRole="Supplier" ToRole="SupplierIngredient" />
+        </EntityType>
+        <EntityType Name="SystemLog">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountId" Type="Int32" />
+          <Property Name="LogType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ActionCode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_SystemLogs_Accounts" FromRole="SystemLogs" ToRole="Accounts" />
+        </EntityType>
+        <EntityType Name="Topping">
+          <Key>
+            <PropertyRef Name="ToppingId" />
+          </Key>
+          <Property Name="ToppingId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ToppingName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="OrderDetailToppings" Relationship="Self.FK_OrderDetailToppings_Toppings" FromRole="Toppings" ToRole="OrderDetailToppings" />
+          <NavigationProperty Name="ProductToppings" Relationship="Self.FK_ProductToppings_Toppings" FromRole="Toppings" ToRole="ProductToppings" />
+        </EntityType>
+        <EntityType Name="UserPermission">
+          <Key>
+            <PropertyRef Name="UserPermissionId" />
+          </Key>
+          <Property Name="UserPermissionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountId" Type="Int32" Nullable="false" />
+          <Property Name="PermissionId" Type="Int32" Nullable="false" />
+          <Property Name="GrantedByAccountId" Type="Int32" />
+          <Property Name="GrantedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="RevokedByAccountId" Type="Int32" />
+          <Property Name="RevokedAt" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_UserPermissions_Accounts" FromRole="UserPermissions" ToRole="Accounts" />
+          <NavigationProperty Name="Account1" Relationship="Self.FK_UserPermissions_GrantedBy" FromRole="UserPermissions" ToRole="Accounts" />
+          <NavigationProperty Name="Account2" Relationship="Self.FK_UserPermissions_RevokedBy" FromRole="UserPermissions" ToRole="Accounts" />
+          <NavigationProperty Name="Permission" Relationship="Self.FK_UserPermissions_Permissions" FromRole="UserPermissions" ToRole="Permissions" />
+        </EntityType>
+        <Association Name="FK_Accounts_Roles">
+          <End Role="Roles" Type="Self.Role" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryTransactions_Accounts">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="InventoryTransactions" Type="Self.InventoryTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="InventoryTransactions">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Orders_Accounts">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceipts_Accounts">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="1" />
+          <End Role="PurchaseReceipts" Type="Self.PurchaseReceipt" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="PurchaseReceipts">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SystemLogs_Accounts">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="SystemLogs" Type="Self.SystemLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="SystemLogs">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_Accounts">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="1" />
+          <End Role="UserPermissions" Type="Self.UserPermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_GrantedBy">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="UserPermissions" Type="Self.UserPermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="GrantedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_RevokedBy">
+          <End Role="Accounts" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="UserPermissions" Type="Self.UserPermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="RevokedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_Categories">
+          <End Role="Categories" Type="Self.Category" Multiplicity="1" />
+          <End Role="Products" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="CategoryId" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Orders_Customers">
+          <End Role="Customers" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryTransactions_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredient" Multiplicity="1" />
+          <End Role="InventoryTransactions" Type="Self.InventoryTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="InventoryTransactions">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceiptDetails_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredient" Multiplicity="1" />
+          <End Role="PurchaseReceiptDetails" Type="Self.PurchaseReceiptDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="PurchaseReceiptDetails">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipeDetails_Ingredients">
+          <End Role="Ingredients" Type="Self.Ingredient" Multiplicity="1" />
+          <End Role="RecipeDetails" Type="Self.RecipeDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredients">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="RecipeDetails">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetails_Orders">
+          <End Role="Orders" Type="Self.Order" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetails_Products">
+          <End Role="Products" Type="Self.Product" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetails_ProductSizes">
+          <End Role="ProductSizes" Type="Self.ProductSize" Multiplicity="0..1" />
+          <End Role="OrderDetails" Type="Self.OrderDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductSizes">
+              <PropertyRef Name="ProductSizeId" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="ProductSizeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetailToppings_OrderDetails">
+          <End Role="OrderDetails" Type="Self.OrderDetail" Multiplicity="1" />
+          <End Role="OrderDetailToppings" Type="Self.OrderDetailTopping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderDetails">
+              <PropertyRef Name="OrderDetailId" />
+            </Principal>
+            <Dependent Role="OrderDetailToppings">
+              <PropertyRef Name="OrderDetailId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderDetailToppings_Toppings">
+          <End Role="Toppings" Type="Self.Topping" Multiplicity="1" />
+          <End Role="OrderDetailToppings" Type="Self.OrderDetailTopping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Toppings">
+              <PropertyRef Name="ToppingId" />
+            </Principal>
+            <Dependent Role="OrderDetailToppings">
+              <PropertyRef Name="ToppingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderPromotions_Orders">
+          <End Role="Orders" Type="Self.Order" Multiplicity="1" />
+          <End Role="OrderPromotions" Type="Self.OrderPromotion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderPromotions">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderPromotions_Promotions">
+          <End Role="Promotions" Type="Self.Promotion" Multiplicity="1" />
+          <End Role="OrderPromotions" Type="Self.OrderPromotion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Promotions">
+              <PropertyRef Name="PromotionId" />
+            </Principal>
+            <Dependent Role="OrderPromotions">
+              <PropertyRef Name="PromotionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissions_Permissions">
+          <End Role="Permissions" Type="Self.Permission" Multiplicity="1" />
+          <End Role="UserPermissions" Type="Self.UserPermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permissions">
+              <PropertyRef Name="PermissionId" />
+            </Principal>
+            <Dependent Role="UserPermissions">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductSizes_Products">
+          <End Role="Products" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductSizes" Type="Self.ProductSize" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="ProductSizes">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductToppings_Products">
+          <End Role="Products" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductToppings" Type="Self.ProductTopping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="ProductToppings">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductSizes_Sizes">
+          <End Role="Sizes" Type="Self.Size" Multiplicity="1" />
+          <End Role="ProductSizes" Type="Self.ProductSize" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sizes">
+              <PropertyRef Name="SizeId" />
+            </Principal>
+            <Dependent Role="ProductSizes">
+              <PropertyRef Name="SizeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Recipes_ProductSizes">
+          <End Role="ProductSizes" Type="Self.ProductSize" Multiplicity="1" />
+          <End Role="Recipes" Type="Self.Recipe" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductSizes">
+              <PropertyRef Name="ProductSizeId" />
+            </Principal>
+            <Dependent Role="Recipes">
+              <PropertyRef Name="ProductSizeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductToppings_Toppings">
+          <End Role="Toppings" Type="Self.Topping" Multiplicity="1" />
+          <End Role="ProductToppings" Type="Self.ProductTopping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Toppings">
+              <PropertyRef Name="ToppingId" />
+            </Principal>
+            <Dependent Role="ProductToppings">
+              <PropertyRef Name="ToppingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceiptDetails_Receipts">
+          <End Role="PurchaseReceipts" Type="Self.PurchaseReceipt" Multiplicity="1" />
+          <End Role="PurchaseReceiptDetails" Type="Self.PurchaseReceiptDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseReceipts">
+              <PropertyRef Name="PurchaseReceiptId" />
+            </Principal>
+            <Dependent Role="PurchaseReceiptDetails">
+              <PropertyRef Name="PurchaseReceiptId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseReceipts_Suppliers">
+          <End Role="Suppliers" Type="Self.Supplier" Multiplicity="1" />
+          <End Role="PurchaseReceipts" Type="Self.PurchaseReceipt" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Suppliers">
+              <PropertyRef Name="SupplierId" />
+            </Principal>
+            <Dependent Role="PurchaseReceipts">
+              <PropertyRef Name="SupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipeDetails_Recipes">
+          <End Role="Recipes" Type="Self.Recipe" Multiplicity="1" />
+          <End Role="RecipeDetails" Type="Self.RecipeDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipes">
+              <PropertyRef Name="RecipeId" />
+            </Principal>
+            <Dependent Role="RecipeDetails">
+              <PropertyRef Name="RecipeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RolePermissions">
+          <End Role="Permissions" Type="Self.Permission" Multiplicity="*" />
+          <End Role="Roles" Type="Self.Role" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="MOCBREWEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Categories" EntityType="Self.Category" />
+          <EntitySet Name="Customers" EntityType="Self.Customer" />
+          <EntitySet Name="Ingredients" EntityType="Self.Ingredient" />
+          <EntitySet Name="InventoryTransactions" EntityType="Self.InventoryTransaction" />
+          <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
+          <EntitySet Name="OrderDetailToppings" EntityType="Self.OrderDetailTopping" />
+          <EntitySet Name="OrderPromotions" EntityType="Self.OrderPromotion" />
+          <EntitySet Name="Orders" EntityType="Self.Order" />
+          <EntitySet Name="Permissions" EntityType="Self.Permission" />
+          <EntitySet Name="Products" EntityType="Self.Product" />
+          <EntitySet Name="ProductSizes" EntityType="Self.ProductSize" />
+          <EntitySet Name="ProductToppings" EntityType="Self.ProductTopping" />
+          <EntitySet Name="Promotions" EntityType="Self.Promotion" />
+          <EntitySet Name="PurchaseReceiptDetails" EntityType="Self.PurchaseReceiptDetail" />
+          <EntitySet Name="PurchaseReceipts" EntityType="Self.PurchaseReceipt" />
+          <EntitySet Name="RecipeDetails" EntityType="Self.RecipeDetail" />
+          <EntitySet Name="Recipes" EntityType="Self.Recipe" />
+          <EntitySet Name="Roles" EntityType="Self.Role" />
+          <EntitySet Name="Sizes" EntityType="Self.Size" />
+          <EntitySet Name="Suppliers" EntityType="Self.Supplier" />
+          <EntitySet Name="SystemLogs" EntityType="Self.SystemLog" />
+          <EntitySet Name="Toppings" EntityType="Self.Topping" />
+          <EntitySet Name="UserPermissions" EntityType="Self.UserPermission" />
+          <AssociationSet Name="FK_Accounts_Roles" Association="Self.FK_Accounts_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryTransactions_Accounts" Association="Self.FK_InventoryTransactions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="InventoryTransactions" EntitySet="InventoryTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Orders_Accounts" Association="Self.FK_Orders_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceipts_Accounts" Association="Self.FK_PurchaseReceipts_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="PurchaseReceipts" EntitySet="PurchaseReceipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SystemLogs_Accounts" Association="Self.FK_SystemLogs_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="SystemLogs" EntitySet="SystemLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_Accounts" Association="Self.FK_UserPermissions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_GrantedBy" Association="Self.FK_UserPermissions_GrantedBy">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_RevokedBy" Association="Self.FK_UserPermissions_RevokedBy">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_Categories" Association="Self.FK_Products_Categories">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Orders_Customers" Association="Self.FK_Orders_Customers">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryTransactions_Ingredients" Association="Self.FK_InventoryTransactions_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="InventoryTransactions" EntitySet="InventoryTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceiptDetails_Ingredients" Association="Self.FK_PurchaseReceiptDetails_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="PurchaseReceiptDetails" EntitySet="PurchaseReceiptDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipeDetails_Ingredients" Association="Self.FK_RecipeDetails_Ingredients">
+            <End Role="Ingredients" EntitySet="Ingredients" />
+            <End Role="RecipeDetails" EntitySet="RecipeDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetails_Orders" Association="Self.FK_OrderDetails_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetails_Products" Association="Self.FK_OrderDetails_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetails_ProductSizes" Association="Self.FK_OrderDetails_ProductSizes">
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetailToppings_OrderDetails" Association="Self.FK_OrderDetailToppings_OrderDetails">
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+            <End Role="OrderDetailToppings" EntitySet="OrderDetailToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderDetailToppings_Toppings" Association="Self.FK_OrderDetailToppings_Toppings">
+            <End Role="Toppings" EntitySet="Toppings" />
+            <End Role="OrderDetailToppings" EntitySet="OrderDetailToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderPromotions_Orders" Association="Self.FK_OrderPromotions_Orders">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="OrderPromotions" EntitySet="OrderPromotions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderPromotions_Promotions" Association="Self.FK_OrderPromotions_Promotions">
+            <End Role="Promotions" EntitySet="Promotions" />
+            <End Role="OrderPromotions" EntitySet="OrderPromotions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissions_Permissions" Association="Self.FK_UserPermissions_Permissions">
+            <End Role="Permissions" EntitySet="Permissions" />
+            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductSizes_Products" Association="Self.FK_ProductSizes_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductToppings_Products" Association="Self.FK_ProductToppings_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="ProductToppings" EntitySet="ProductToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductSizes_Sizes" Association="Self.FK_ProductSizes_Sizes">
+            <End Role="Sizes" EntitySet="Sizes" />
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Recipes_ProductSizes" Association="Self.FK_Recipes_ProductSizes">
+            <End Role="ProductSizes" EntitySet="ProductSizes" />
+            <End Role="Recipes" EntitySet="Recipes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductToppings_Toppings" Association="Self.FK_ProductToppings_Toppings">
+            <End Role="Toppings" EntitySet="Toppings" />
+            <End Role="ProductToppings" EntitySet="ProductToppings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceiptDetails_Receipts" Association="Self.FK_PurchaseReceiptDetails_Receipts">
+            <End Role="PurchaseReceipts" EntitySet="PurchaseReceipts" />
+            <End Role="PurchaseReceiptDetails" EntitySet="PurchaseReceiptDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseReceipts_Suppliers" Association="Self.FK_PurchaseReceipts_Suppliers">
+            <End Role="Suppliers" EntitySet="Suppliers" />
+            <End Role="PurchaseReceipts" EntitySet="PurchaseReceipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipeDetails_Recipes" Association="Self.FK_RecipeDetails_Recipes">
+            <End Role="Recipes" EntitySet="Recipes" />
+            <End Role="RecipeDetails" EntitySet="RecipeDetails" />
+          </AssociationSet>
+          <AssociationSet Name="RolePermissions" Association="Self.RolePermissions">
+            <End Role="Permissions" EntitySet="Permissions" />
+            <End Role="Roles" EntitySet="Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Categories_ParentCategory" Association="MOCBREWModel.FK_Categories_ParentCategory">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Category1" EntitySet="Categories" />
+          </AssociationSet>
+          <EntitySet Name="InventoryStocktakes" EntityType="MOCBREWModel.InventoryStocktake" />
+          <AssociationSet Name="FK_InventoryStocktakes_Accounts" Association="MOCBREWModel.FK_InventoryStocktakes_Accounts">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="InventoryStocktake" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Ingredients" Association="MOCBREWModel.FK_InventoryStocktakes_Ingredients">
+            <End Role="Ingredient" EntitySet="Ingredients" />
+            <End Role="InventoryStocktake" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Transactions" Association="MOCBREWModel.FK_InventoryStocktakes_Transactions">
+            <End Role="InventoryTransaction" EntitySet="InventoryTransactions" />
+            <End Role="InventoryStocktake" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <EntitySet Name="InventoryStocktakeSessions" EntityType="MOCBREWModel.InventoryStocktakeSession" />
+          <AssociationSet Name="FK_InventoryStocktakeSessions_Accounts" Association="MOCBREWModel.FK_InventoryStocktakeSessions_Accounts">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="InventoryStocktakeSession" EntitySet="InventoryStocktakeSessions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InventoryStocktakes_Sessions" Association="MOCBREWModel.FK_InventoryStocktakes_Sessions">
+            <End Role="InventoryStocktakeSession" EntitySet="InventoryStocktakeSessions" />
+            <End Role="InventoryStocktake" EntitySet="InventoryStocktakes" />
+          </AssociationSet>
+          <EntitySet Name="OrderStatusHistories" EntityType="MOCBREWModel.OrderStatusHistory" />
+          <AssociationSet Name="FK_OrderStatusHistories_Accounts" Association="MOCBREWModel.FK_OrderStatusHistories_Accounts">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderStatusHistories_Orders" Association="MOCBREWModel.FK_OrderStatusHistories_Orders">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="OrderStatusHistory" EntitySet="OrderStatusHistories" />
+          </AssociationSet>
+          <EntitySet Name="OrderRequests" EntityType="MOCBREWModel.OrderRequest" />
+          <AssociationSet Name="FK_OrderRequests_RequestedBy" Association="MOCBREWModel.FK_OrderRequests_RequestedBy">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="OrderRequest" EntitySet="OrderRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderRequests_ReviewedBy" Association="MOCBREWModel.FK_OrderRequests_ReviewedBy">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="OrderRequest" EntitySet="OrderRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderRequests_Orders" Association="MOCBREWModel.FK_OrderRequests_Orders">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="OrderRequest" EntitySet="OrderRequests" />
+          </AssociationSet>
+          <EntitySet Name="SupplierIngredients" EntityType="MOCBREWModel.SupplierIngredient" />
+          <AssociationSet Name="FK_SupplierIngredients_Ingredients" Association="MOCBREWModel.FK_SupplierIngredients_Ingredients">
+            <End Role="Ingredient" EntitySet="Ingredients" />
+            <End Role="SupplierIngredient" EntitySet="SupplierIngredients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SupplierIngredients_Suppliers" Association="MOCBREWModel.FK_SupplierIngredients_Suppliers">
+            <End Role="Supplier" EntitySet="Suppliers" />
+            <End Role="SupplierIngredient" EntitySet="SupplierIngredients" />
+          </AssociationSet>
+          <EntitySet Name="WorkShiftOrders" EntityType="MOCBREWModel.WorkShiftOrder" />
+          <EntitySet Name="WorkShifts" EntityType="MOCBREWModel.WorkShift" />
+          <AssociationSet Name="FK_WorkShifts_Accounts" Association="MOCBREWModel.FK_WorkShifts_Accounts">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="WorkShift" EntitySet="WorkShifts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkShiftOrders_Orders" Association="MOCBREWModel.FK_WorkShiftOrders_Orders">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="WorkShiftOrder" EntitySet="WorkShiftOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkShiftOrders_WorkShifts" Association="MOCBREWModel.FK_WorkShiftOrders_WorkShifts">
+            <End Role="WorkShift" EntitySet="WorkShifts" />
+            <End Role="WorkShiftOrder" EntitySet="WorkShiftOrders" />
+          </AssociationSet>
+        </EntityContainer>
+        <Association Name="FK_Categories_ParentCategory">
+          <End Type="MOCBREWModel.Category" Role="Category" Multiplicity="0..1" />
+          <End Type="MOCBREWModel.Category" Role="Category1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="CategoryId" />
+            </Principal>
+            <Dependent Role="Category1">
+              <PropertyRef Name="ParentCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="InventoryStocktake">
+          <Key>
+            <PropertyRef Name="StocktakeId" />
+          </Key>
+          <Property Name="StocktakeId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="AccountId" Type="Int32" Nullable="false" />
+          <Property Name="SystemStock" Type="Decimal" Nullable="false" Precision="18" Scale="3" />
+          <Property Name="ActualStock" Type="Decimal" Nullable="false" Precision="18" Scale="3" />
+          <Property Name="Difference" Type="Decimal" Nullable="false" Precision="18" Scale="3" />
+          <Property Name="StocktakeDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="TransactionId" Type="Int64" />
+          <Property Name="Note" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Account" Relationship="MOCBREWModel.FK_InventoryStocktakes_Accounts" FromRole="InventoryStocktake" ToRole="Account" />
+          <NavigationProperty Name="Ingredient" Relationship="MOCBREWModel.FK_InventoryStocktakes_Ingredients" FromRole="InventoryStocktake" ToRole="Ingredient" />
+          <NavigationProperty Name="InventoryTransaction" Relationship="MOCBREWModel.FK_InventoryStocktakes_Transactions" FromRole="InventoryStocktake" ToRole="InventoryTransaction" />
+          <Property Name="SessionId" Type="Int64" />
+          <NavigationProperty Name="InventoryStocktakeSession" Relationship="MOCBREWModel.FK_InventoryStocktakes_Sessions" FromRole="InventoryStocktake" ToRole="InventoryStocktakeSession" />
+        </EntityType>
+        <Association Name="FK_InventoryStocktakes_Accounts">
+          <End Type="MOCBREWModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="MOCBREWModel.InventoryStocktake" Role="InventoryStocktake" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="InventoryStocktake">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Ingredients">
+          <End Type="MOCBREWModel.Ingredient" Role="Ingredient" Multiplicity="1" />
+          <End Type="MOCBREWModel.InventoryStocktake" Role="InventoryStocktake" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="InventoryStocktake">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Transactions">
+          <End Type="MOCBREWModel.InventoryTransaction" Role="InventoryTransaction" Multiplicity="0..1" />
+          <End Type="MOCBREWModel.InventoryStocktake" Role="InventoryStocktake" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InventoryTransaction">
+              <PropertyRef Name="TransactionId" />
+            </Principal>
+            <Dependent Role="InventoryStocktake">
+              <PropertyRef Name="TransactionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="InventoryStocktakeSession">
+          <Key>
+            <PropertyRef Name="SessionId" />
+          </Key>
+          <Property Name="SessionId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StocktakeCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AccountId" Type="Int32" Nullable="false" />
+          <Property Name="StocktakeDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Note" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Account" Relationship="MOCBREWModel.FK_InventoryStocktakeSessions_Accounts" FromRole="InventoryStocktakeSession" ToRole="Account" />
+          <NavigationProperty Name="InventoryStocktakes" Relationship="MOCBREWModel.FK_InventoryStocktakes_Sessions" FromRole="InventoryStocktakeSession" ToRole="InventoryStocktake" />
+        </EntityType>
+        <Association Name="FK_InventoryStocktakeSessions_Accounts">
+          <End Type="MOCBREWModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="MOCBREWModel.InventoryStocktakeSession" Role="InventoryStocktakeSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="InventoryStocktakeSession">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InventoryStocktakes_Sessions">
+          <End Type="MOCBREWModel.InventoryStocktakeSession" Role="InventoryStocktakeSession" Multiplicity="0..1" />
+          <End Type="MOCBREWModel.InventoryStocktake" Role="InventoryStocktake" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InventoryStocktakeSession">
+              <PropertyRef Name="SessionId" />
+            </Principal>
+            <Dependent Role="InventoryStocktake">
+              <PropertyRef Name="SessionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="OrderStatusHistory">
+          <Key>
+            <PropertyRef Name="HistoryId" />
+          </Key>
+          <Property Name="HistoryId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <Property Name="AccountId" Type="Int32" />
+          <Property Name="OldStatus" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="NewStatus" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ChangedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Account" Relationship="MOCBREWModel.FK_OrderStatusHistories_Accounts" FromRole="OrderStatusHistory" ToRole="Account" />
+          <NavigationProperty Name="Order" Relationship="MOCBREWModel.FK_OrderStatusHistories_Orders" FromRole="OrderStatusHistory" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK_OrderStatusHistories_Accounts">
+          <End Type="MOCBREWModel.Account" Role="Account" Multiplicity="0..1" />
+          <End Type="MOCBREWModel.OrderStatusHistory" Role="OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderStatusHistories_Orders">
+          <End Type="MOCBREWModel.Order" Role="Order" Multiplicity="1" />
+          <End Type="MOCBREWModel.OrderStatusHistory" Role="OrderStatusHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderStatusHistory">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="OrderRequest">
+          <Key>
+            <PropertyRef Name="RequestId" />
+          </Key>
+          <Property Name="RequestId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <Property Name="RequestType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="RequestedByAccountId" Type="Int32" Nullable="false" />
+          <Property Name="Reason" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="RequestStatus" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="RequestedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ReviewedByAccountId" Type="Int32" />
+          <Property Name="ReviewedAt" Type="DateTime" Precision="7" />
+          <Property Name="ReviewNote" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Account" Relationship="MOCBREWModel.FK_OrderRequests_RequestedBy" FromRole="OrderRequest" ToRole="Account" />
+          <NavigationProperty Name="Account1" Relationship="MOCBREWModel.FK_OrderRequests_ReviewedBy" FromRole="OrderRequest" ToRole="Account" />
+          <NavigationProperty Name="Order" Relationship="MOCBREWModel.FK_OrderRequests_Orders" FromRole="OrderRequest" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK_OrderRequests_RequestedBy">
+          <End Type="MOCBREWModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="MOCBREWModel.OrderRequest" Role="OrderRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="OrderRequest">
+              <PropertyRef Name="RequestedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderRequests_ReviewedBy">
+          <End Type="MOCBREWModel.Account" Role="Account" Multiplicity="0..1" />
+          <End Type="MOCBREWModel.OrderRequest" Role="OrderRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="OrderRequest">
+              <PropertyRef Name="ReviewedByAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderRequests_Orders">
+          <End Type="MOCBREWModel.Order" Role="Order" Multiplicity="1" />
+          <End Type="MOCBREWModel.OrderRequest" Role="OrderRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="OrderRequest">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SupplierIngredient">
+          <Key>
+            <PropertyRef Name="SupplierIngredientId" />
+          </Key>
+          <Property Name="SupplierIngredientId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SupplierId" Type="Int32" Nullable="false" />
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Ingredient" Relationship="MOCBREWModel.FK_SupplierIngredients_Ingredients" FromRole="SupplierIngredient" ToRole="Ingredient" />
+          <NavigationProperty Name="Supplier" Relationship="MOCBREWModel.FK_SupplierIngredients_Suppliers" FromRole="SupplierIngredient" ToRole="Supplier" />
+        </EntityType>
+        <Association Name="FK_SupplierIngredients_Ingredients">
+          <End Type="MOCBREWModel.Ingredient" Role="Ingredient" Multiplicity="1" />
+          <End Type="MOCBREWModel.SupplierIngredient" Role="SupplierIngredient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="IngredientId" />
+            </Principal>
+            <Dependent Role="SupplierIngredient">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SupplierIngredients_Suppliers">
+          <End Type="MOCBREWModel.Supplier" Role="Supplier" Multiplicity="1" />
+          <End Type="MOCBREWModel.SupplierIngredient" Role="SupplierIngredient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Supplier">
+              <PropertyRef Name="SupplierId" />
+            </Principal>
+            <Dependent Role="SupplierIngredient">
+              <PropertyRef Name="SupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="WorkShiftOrder">
+          <Key>
+            <PropertyRef Name="WorkShiftOrderId" />
+          </Key>
+          <Property Name="WorkShiftOrderId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ShiftId" Type="Int64" Nullable="false" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Order" Relationship="MOCBREWModel.FK_WorkShiftOrders_Orders" FromRole="WorkShiftOrder" ToRole="Order" />
+          <NavigationProperty Name="WorkShift" Relationship="MOCBREWModel.FK_WorkShiftOrders_WorkShifts" FromRole="WorkShiftOrder" ToRole="WorkShift" />
+        </EntityType>
+        <EntityType Name="WorkShift">
+          <Key>
+            <PropertyRef Name="ShiftId" />
+          </Key>
+          <Property Name="ShiftId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ShiftCode" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="AccountId" Type="Int32" Nullable="false" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="EndTime" Type="DateTime" Precision="7" />
+          <Property Name="OpeningCash" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="ExpectedCash" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="ActualCash" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CashDifference" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Account" Relationship="MOCBREWModel.FK_WorkShifts_Accounts" FromRole="WorkShift" ToRole="Account" />
+          <NavigationProperty Name="WorkShiftOrders" Relationship="MOCBREWModel.FK_WorkShiftOrders_WorkShifts" FromRole="WorkShift" ToRole="WorkShiftOrder" />
+        </EntityType>
+        <Association Name="FK_WorkShifts_Accounts">
+          <End Type="MOCBREWModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="MOCBREWModel.WorkShift" Role="WorkShift" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountId" />
+            </Principal>
+            <Dependent Role="WorkShift">
+              <PropertyRef Name="AccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkShiftOrders_Orders">
+          <End Type="MOCBREWModel.Order" Role="Order" Multiplicity="1" />
+          <End Type="MOCBREWModel.WorkShiftOrder" Role="WorkShiftOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="WorkShiftOrder">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkShiftOrders_WorkShifts">
+          <End Type="MOCBREWModel.WorkShift" Role="WorkShift" Multiplicity="1" />
+          <End Type="MOCBREWModel.WorkShiftOrder" Role="WorkShiftOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkShift">
+              <PropertyRef Name="ShiftId" />
+            </Principal>
+            <Dependent Role="WorkShiftOrder">
+              <PropertyRef Name="ShiftId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MOCBREWModelStoreContainer" CdmEntityContainer="MOCBREWEntities">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="MOCBREWModel.Account">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="EmployeeCode" ColumnName="EmployeeCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="MOCBREWModel.Category">
+              <MappingFragment StoreEntitySet="Categories">
+                <ScalarProperty Name="ParentCategoryId" ColumnName="ParentCategoryId" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="MOCBREWModel.Customer">
+              <MappingFragment StoreEntitySet="Customers">
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ingredients">
+            <EntityTypeMapping TypeName="MOCBREWModel.Ingredient">
+              <MappingFragment StoreEntitySet="Ingredients">
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="IngredientName" ColumnName="IngredientName" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="CurrentStock" ColumnName="CurrentStock" />
+                <ScalarProperty Name="MinimumStock" ColumnName="MinimumStock" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InventoryTransactions">
+            <EntityTypeMapping TypeName="MOCBREWModel.InventoryTransaction">
+              <MappingFragment StoreEntitySet="InventoryTransactions">
+                <ScalarProperty Name="TransactionId" ColumnName="TransactionId" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="ReferenceCode" ColumnName="ReferenceCode" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderDetails">
+            <EntityTypeMapping TypeName="MOCBREWModel.OrderDetail">
+              <MappingFragment StoreEntitySet="OrderDetails">
+                <ScalarProperty Name="OrderDetailId" ColumnName="OrderDetailId" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="ProductSizeId" ColumnName="ProductSizeId" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="SizeName" ColumnName="SizeName" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderDetailToppings">
+            <EntityTypeMapping TypeName="MOCBREWModel.OrderDetailTopping">
+              <MappingFragment StoreEntitySet="OrderDetailToppings">
+                <ScalarProperty Name="OrderDetailToppingId" ColumnName="OrderDetailToppingId" />
+                <ScalarProperty Name="OrderDetailId" ColumnName="OrderDetailId" />
+                <ScalarProperty Name="ToppingId" ColumnName="ToppingId" />
+                <ScalarProperty Name="ToppingName" ColumnName="ToppingName" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderPromotions">
+            <EntityTypeMapping TypeName="MOCBREWModel.OrderPromotion">
+              <MappingFragment StoreEntitySet="OrderPromotions">
+                <ScalarProperty Name="OrderPromotionId" ColumnName="OrderPromotionId" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="PromotionId" ColumnName="PromotionId" />
+                <ScalarProperty Name="DiscountAmount" ColumnName="DiscountAmount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="MOCBREWModel.Order">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="FulfillmentMethod" ColumnName="FulfillmentMethod" />
+                <ScalarProperty Name="OrderSource" ColumnName="OrderSource" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="ReceiverName" ColumnName="ReceiverName" />
+                <ScalarProperty Name="ReceiverPhone" ColumnName="ReceiverPhone" />
+                <ScalarProperty Name="DeliveryAddress" ColumnName="DeliveryAddress" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="SubTotal" ColumnName="SubTotal" />
+                <ScalarProperty Name="DiscountAmount" ColumnName="DiscountAmount" />
+                <ScalarProperty Name="ShippingFee" ColumnName="ShippingFee" />
+                <ScalarProperty Name="TotalAmount" ColumnName="TotalAmount" />
+                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
+                <ScalarProperty Name="PaymentStatus" ColumnName="PaymentStatus" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Permissions">
+            <EntityTypeMapping TypeName="MOCBREWModel.Permission">
+              <MappingFragment StoreEntitySet="Permissions">
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+                <ScalarProperty Name="PermissionCode" ColumnName="PermissionCode" />
+                <ScalarProperty Name="PermissionName" ColumnName="PermissionName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products">
+            <EntityTypeMapping TypeName="MOCBREWModel.Product">
+              <MappingFragment StoreEntitySet="Products">
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
+                <ScalarProperty Name="IsFeatured" ColumnName="IsFeatured" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductSizes">
+            <EntityTypeMapping TypeName="MOCBREWModel.ProductSize">
+              <MappingFragment StoreEntitySet="ProductSizes">
+                <ScalarProperty Name="ProductSizeId" ColumnName="ProductSizeId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="SizeId" ColumnName="SizeId" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="IsAvailable" ColumnName="IsAvailable" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductToppings">
+            <EntityTypeMapping TypeName="MOCBREWModel.ProductTopping">
+              <MappingFragment StoreEntitySet="ProductToppings">
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="ToppingId" ColumnName="ToppingId" />
+                <ScalarProperty Name="IsAvailable" ColumnName="IsAvailable" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Promotions">
+            <EntityTypeMapping TypeName="MOCBREWModel.Promotion">
+              <MappingFragment StoreEntitySet="Promotions">
+                <ScalarProperty Name="PromotionId" ColumnName="PromotionId" />
+                <ScalarProperty Name="PromotionCode" ColumnName="PromotionCode" />
+                <ScalarProperty Name="PromotionName" ColumnName="PromotionName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DiscountType" ColumnName="DiscountType" />
+                <ScalarProperty Name="DiscountValue" ColumnName="DiscountValue" />
+                <ScalarProperty Name="MinimumOrderValue" ColumnName="MinimumOrderValue" />
+                <ScalarProperty Name="MaximumDiscount" ColumnName="MaximumDiscount" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseReceiptDetails">
+            <EntityTypeMapping TypeName="MOCBREWModel.PurchaseReceiptDetail">
+              <MappingFragment StoreEntitySet="PurchaseReceiptDetails">
+                <ScalarProperty Name="PurchaseReceiptDetailId" ColumnName="PurchaseReceiptDetailId" />
+                <ScalarProperty Name="PurchaseReceiptId" ColumnName="PurchaseReceiptId" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseReceipts">
+            <EntityTypeMapping TypeName="MOCBREWModel.PurchaseReceipt">
+              <MappingFragment StoreEntitySet="PurchaseReceipts">
+                <ScalarProperty Name="PurchaseReceiptId" ColumnName="PurchaseReceiptId" />
+                <ScalarProperty Name="ReceiptCode" ColumnName="ReceiptCode" />
+                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="ReceiptDate" ColumnName="ReceiptDate" />
+                <ScalarProperty Name="TotalAmount" ColumnName="TotalAmount" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecipeDetails">
+            <EntityTypeMapping TypeName="MOCBREWModel.RecipeDetail">
+              <MappingFragment StoreEntitySet="RecipeDetails">
+                <ScalarProperty Name="RecipeDetailId" ColumnName="RecipeDetailId" />
+                <ScalarProperty Name="RecipeId" ColumnName="RecipeId" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="QuantityRequired" ColumnName="QuantityRequired" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Recipes">
+            <EntityTypeMapping TypeName="MOCBREWModel.Recipe">
+              <MappingFragment StoreEntitySet="Recipes">
+                <ScalarProperty Name="RecipeId" ColumnName="RecipeId" />
+                <ScalarProperty Name="ProductSizeId" ColumnName="ProductSizeId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="MOCBREWModel.Role">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sizes">
+            <EntityTypeMapping TypeName="MOCBREWModel.Size">
+              <MappingFragment StoreEntitySet="Sizes">
+                <ScalarProperty Name="SizeId" ColumnName="SizeId" />
+                <ScalarProperty Name="SizeName" ColumnName="SizeName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Suppliers">
+            <EntityTypeMapping TypeName="MOCBREWModel.Supplier">
+              <MappingFragment StoreEntitySet="Suppliers">
+                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
+                <ScalarProperty Name="SupplierName" ColumnName="SupplierName" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="TaxCode" ColumnName="TaxCode" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SystemLogs">
+            <EntityTypeMapping TypeName="MOCBREWModel.SystemLog">
+              <MappingFragment StoreEntitySet="SystemLogs">
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="LogType" ColumnName="LogType" />
+                <ScalarProperty Name="ActionCode" ColumnName="ActionCode" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Toppings">
+            <EntityTypeMapping TypeName="MOCBREWModel.Topping">
+              <MappingFragment StoreEntitySet="Toppings">
+                <ScalarProperty Name="ToppingId" ColumnName="ToppingId" />
+                <ScalarProperty Name="ToppingName" ColumnName="ToppingName" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserPermissions">
+            <EntityTypeMapping TypeName="MOCBREWModel.UserPermission">
+              <MappingFragment StoreEntitySet="UserPermissions">
+                <ScalarProperty Name="UserPermissionId" ColumnName="UserPermissionId" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+                <ScalarProperty Name="GrantedByAccountId" ColumnName="GrantedByAccountId" />
+                <ScalarProperty Name="GrantedAt" ColumnName="GrantedAt" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="RevokedByAccountId" ColumnName="RevokedByAccountId" />
+                <ScalarProperty Name="RevokedAt" ColumnName="RevokedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="RolePermissions" TypeName="MOCBREWModel.RolePermissions" StoreEntitySet="RolePermissions">
+            <EndProperty Name="Permissions">
+              <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+            </EndProperty>
+            <EndProperty Name="Roles">
+              <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="InventoryStocktakes">
+            <EntityTypeMapping TypeName="MOCBREWModel.InventoryStocktake">
+              <MappingFragment StoreEntitySet="InventoryStocktakes">
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="TransactionId" ColumnName="TransactionId" />
+                <ScalarProperty Name="StocktakeDate" ColumnName="StocktakeDate" />
+                <ScalarProperty Name="Difference" ColumnName="Difference" />
+                <ScalarProperty Name="ActualStock" ColumnName="ActualStock" />
+                <ScalarProperty Name="SystemStock" ColumnName="SystemStock" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="StocktakeId" ColumnName="StocktakeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InventoryStocktakeSessions">
+            <EntityTypeMapping TypeName="MOCBREWModel.InventoryStocktakeSession">
+              <MappingFragment StoreEntitySet="InventoryStocktakeSessions">
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="StocktakeDate" ColumnName="StocktakeDate" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="StocktakeCode" ColumnName="StocktakeCode" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderStatusHistories">
+            <EntityTypeMapping TypeName="MOCBREWModel.OrderStatusHistory">
+              <MappingFragment StoreEntitySet="OrderStatusHistories">
+                <ScalarProperty Name="ChangedAt" ColumnName="ChangedAt" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="NewStatus" ColumnName="NewStatus" />
+                <ScalarProperty Name="OldStatus" ColumnName="OldStatus" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="HistoryId" ColumnName="HistoryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderRequests">
+            <EntityTypeMapping TypeName="MOCBREWModel.OrderRequest">
+              <MappingFragment StoreEntitySet="OrderRequests">
+                <ScalarProperty Name="ReviewNote" ColumnName="ReviewNote" />
+                <ScalarProperty Name="ReviewedAt" ColumnName="ReviewedAt" />
+                <ScalarProperty Name="ReviewedByAccountId" ColumnName="ReviewedByAccountId" />
+                <ScalarProperty Name="RequestedAt" ColumnName="RequestedAt" />
+                <ScalarProperty Name="RequestStatus" ColumnName="RequestStatus" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="RequestedByAccountId" ColumnName="RequestedByAccountId" />
+                <ScalarProperty Name="RequestType" ColumnName="RequestType" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="RequestId" ColumnName="RequestId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SupplierIngredients">
+            <EntityTypeMapping TypeName="MOCBREWModel.SupplierIngredient">
+              <MappingFragment StoreEntitySet="SupplierIngredients">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
+                <ScalarProperty Name="SupplierIngredientId" ColumnName="SupplierIngredientId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WorkShiftOrders">
+            <EntityTypeMapping TypeName="MOCBREWModel.WorkShiftOrder">
+              <MappingFragment StoreEntitySet="WorkShiftOrders">
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
+                <ScalarProperty Name="WorkShiftOrderId" ColumnName="WorkShiftOrderId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WorkShifts">
+            <EntityTypeMapping TypeName="MOCBREWModel.WorkShift">
+              <MappingFragment StoreEntitySet="WorkShifts">
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CashDifference" ColumnName="CashDifference" />
+                <ScalarProperty Name="ActualCash" ColumnName="ActualCash" />
+                <ScalarProperty Name="ExpectedCash" ColumnName="ExpectedCash" />
+                <ScalarProperty Name="OpeningCash" ColumnName="OpeningCash" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="ShiftCode" ColumnName="ShiftCode" />
+                <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

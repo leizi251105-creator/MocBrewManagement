@@ -1,0 +1,436 @@
+﻿
+@model MocBrewManagement.Models.ProductEditViewModel
+
+@{
+    ViewBag.Title = "Chỉnh sửa sản phẩm";
+    Layout = null;
+
+    var categoryOptions = new List<SelectListItem>();
+
+    if (Model.Categories != null)
+    {
+        var parentCategories = Model.Categories
+            .Where(c => c.ParentCategoryId == null && c.IsActive)
+            .OrderBy(c => c.CategoryName)
+            .ToList();
+
+        foreach (var parent in parentCategories)
+        {
+            var children = Model.Categories
+                .Where(c =>
+                    c.ParentCategoryId == parent.CategoryId &&
+                    c.IsActive)
+                .OrderBy(c => c.CategoryName)
+                .ToList();
+
+            // Chỉ hiển thị nhóm có danh mục con đang hoạt động
+            if (children.Any())
+            {
+                var group = new SelectListGroup
+                {
+                    Name = parent.CategoryName
+                };
+
+                foreach (var child in children)
+                {
+                    categoryOptions.Add(new SelectListItem
+                    {
+                        Text = child.CategoryName,
+                        Value = child.CategoryId.ToString(),
+                        Group = group,
+                        Selected = child.CategoryId == Model.CategoryId
+                    });
+                }
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewBag.Title - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        body {
+            background: #f7f3ed;
+            font-family: Arial, sans-serif;
+            color: #493629;
+        }
+
+        .page-wrapper {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 0 18px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+            .page-header h2 {
+                font-weight: 700;
+                color: #60442f;
+            }
+
+        .form-card {
+            background: white;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 4px 18px rgba(70, 48, 30, .07);
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #704d34;
+            border-bottom: 1px solid #eee5da;
+            padding-bottom: 12px;
+            margin: 25px 0 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #594332;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px 12px;
+            border-color: #dfd4c8;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #98704d;
+                box-shadow: 0 0 0 .2rem rgba(152, 112, 77, .12);
+            }
+
+        .size-card {
+            border: 1px solid #e8ded3;
+            border-radius: 10px;
+            padding: 18px;
+            height: 100%;
+        }
+
+            .size-card h6 {
+                font-weight: 700;
+                color: #704d34;
+            }
+
+        .current-image {
+            width: 150px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #e5ddd4;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .btn-brown {
+            background: #704d34;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 22px;
+        }
+
+            .btn-brown:hover {
+                background: #553923;
+                color: white;
+            }
+
+        .btn-cancel {
+            background: #eee8e1;
+            color: #60442f;
+            border-radius: 8px;
+            padding: 11px 22px;
+            text-decoration: none;
+        }
+
+            .btn-cancel:hover {
+                background: #e2d7ca;
+                color: #60442f;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+
+        <div class="page-header">
+            <a href="@Url.Action("Index", "Products")"
+               class="text-decoration-none text-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách sản phẩm
+            </a>
+
+            <h2 class="mt-3">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Chỉnh sửa sản phẩm
+            </h2>
+
+            <p class="text-muted">
+                Cập nhật thông tin và giá bán theo từng kích cỡ.
+            </p>
+        </div>
+
+        <div class="form-card">
+
+            @using (Html.BeginForm(
+                "Edit",
+                "Products",
+                FormMethod.Post,
+                new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.ProductId)
+
+                @Html.ValidationSummary(false, "",
+                         new { @class = "alert alert-danger" })
+
+                <div class="section-title">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    Thông tin sản phẩm
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.ProductName,
+                             "Tên sản phẩm", new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.ProductName,
+                             new { @class = "form-control", placeholder = "Nhập tên sản phẩm" })
+
+                    @Html.ValidationMessageFor(m => m.ProductName,
+                             "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Danh mục sản phẩm</label>
+
+                    @Html.DropDownListFor(
+                             m => m.CategoryId,
+                             categoryOptions,
+                             "-- Chọn danh mục --",
+                             new { @class = "form-select" })
+
+                    @Html.ValidationMessageFor(m => m.CategoryId,
+                             "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Description,
+                             "Mô tả sản phẩm", new { @class = "form-label" })
+
+                    @Html.TextAreaFor(m => m.Description,
+                             new
+                             {
+                                 @class = "form-control",
+                                 rows = "4",
+                                 placeholder = "Nhập mô tả sản phẩm..."
+                             })
+
+                    @Html.ValidationMessageFor(m => m.Description,
+                             "", new { @class = "text-danger" })
+                </div>
+
+                <div class="section-title">
+                    <i class="fa-solid fa-tags"></i>
+                    Giá bán theo kích cỡ
+                </div>
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <div class="size-card">
+                            <h6>Size S</h6>
+
+                            <div class="form-check mb-3">
+                                @Html.CheckBoxFor(m => m.HasSizeS,
+                                         new { @class = "form-check-input size-toggle", data_target = "priceS" })
+                                <label class="form-check-label">Kinh doanh Size S</label>
+                            </div>
+
+                            @Html.LabelFor(m => m.PriceS,
+                                     "Giá bán (VNĐ)", new { @class = "form-label" })
+
+                            @Html.TextBoxFor(m => m.PriceS, "{0:0.##}",
+                                     new
+                                     {
+                                         @class = "form-control size-price",
+                                         id = "priceS",
+                                         type = "number",
+                                         min = "1",
+                                         step = "1"
+                                     })
+
+                            @Html.ValidationMessageFor(m => m.PriceS,
+                                     "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="size-card">
+                            <h6>Size M</h6>
+
+                            <div class="form-check mb-3">
+                                @Html.CheckBoxFor(m => m.HasSizeM,
+                                         new { @class = "form-check-input size-toggle", data_target = "priceM" })
+                                <label class="form-check-label">Kinh doanh Size M</label>
+                            </div>
+
+                            @Html.LabelFor(m => m.PriceM,
+                                     "Giá bán (VNĐ)", new { @class = "form-label" })
+
+                            @Html.TextBoxFor(m => m.PriceM, "{0:0.##}",
+                                     new
+                                     {
+                                         @class = "form-control size-price",
+                                         id = "priceM",
+                                         type = "number",
+                                         min = "1",
+                                         step = "1"
+                                     })
+
+                            @Html.ValidationMessageFor(m => m.PriceM,
+                                     "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="size-card">
+                            <h6>Size L</h6>
+
+                            <div class="form-check mb-3">
+                                @Html.CheckBoxFor(m => m.HasSizeL,
+                                         new { @class = "form-check-input size-toggle", data_target = "priceL" })
+                                <label class="form-check-label">Kinh doanh Size L</label>
+                            </div>
+
+                            @Html.LabelFor(m => m.PriceL,
+                                     "Giá bán (VNĐ)", new { @class = "form-label" })
+
+                            @Html.TextBoxFor(m => m.PriceL, "{0:0.##}",
+                                     new
+                                     {
+                                         @class = "form-control size-price",
+                                         id = "priceL",
+                                         type = "number",
+                                         min = "1",
+                                         step = "1"
+                                     })
+
+                            @Html.ValidationMessageFor(m => m.PriceL,
+                                     "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="section-title">
+                    <i class="fa-solid fa-image"></i>
+                    Hình ảnh sản phẩm
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh hiện tại</label>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.CurrentImageUrl))
+                    {
+                        <img id="imagePreview"
+                             src="@Url.Content(Model.CurrentImageUrl)"
+                             class="current-image"
+                             alt="Ảnh sản phẩm" />
+                    }
+                    else
+                    {
+                        <img id="imagePreview"
+                             src="https://placehold.co/150x130?text=No+Image"
+                             class="current-image"
+                             alt="Chưa có ảnh" />
+                    }
+
+                    <label class="form-label">Chọn ảnh mới (nếu muốn thay đổi)</label>
+
+                    <input type="file"
+                           name="ImageFile"
+                           id="ImageFile"
+                           class="form-control"
+                           accept=".jpg,.jpeg,.png,.webp" />
+
+                    <small class="text-muted">
+                        Hỗ trợ JPG, JPEG, PNG, WEBP. Dung lượng tối đa 5 MB.
+                    </small>
+                </div>
+
+                <div class="section-title">
+                    <i class="fa-solid fa-sliders"></i>
+                    Trạng thái sản phẩm
+                </div>
+
+                <div class="form-check mb-3">
+                    @Html.CheckBoxFor(m => m.IsActive,
+                             new { @class = "form-check-input" })
+                    <label class="form-check-label">
+                        Đang kinh doanh
+                    </label>
+                </div>
+
+                <div class="form-check mb-4">
+                    @Html.CheckBoxFor(m => m.IsFeatured,
+                             new { @class = "form-check-input" })
+                    <label class="form-check-label">
+                        Sản phẩm nổi bật
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="@Url.Action("Index", "Products")"
+                       class="btn-cancel">
+                        Hủy
+                    </a>
+
+                    <button type="submit" class="btn-brown">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Lưu thay đổi
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <script>document.addEventListener("DOMContentLoaded", function () {
+
+            // Bật/tắt ô nhập giá theo trạng thái kinh doanh của Size
+            document.querySelectorAll(".size-toggle").forEach(function (checkbox) {
+                var targetId = checkbox.getAttribute("data-target");
+                var priceInput = document.getElementById(targetId);
+
+                function updatePriceState() {
+                    priceInput.disabled = !checkbox.checked;
+                }
+
+                checkbox.addEventListener("change", updatePriceState);
+                updatePriceState();
+            });
+
+            // Xem trước hình ảnh mới
+            var fileInput = document.getElementById("ImageFile");
+            var imagePreview = document.getElementById("imagePreview");
+
+            fileInput.addEventListener("change", function () {
+                if (this.files && this.files[0]) {
+                    imagePreview.src = URL.createObjectURL(this.files[0]);
+                }
+            });
+        });</script>
+</body>
+</html>

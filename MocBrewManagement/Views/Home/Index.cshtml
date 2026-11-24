@@ -1,0 +1,773 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "Trang chủ quản trị - MỘC BREW";
+
+    int roleId = ViewBag.RoleId == null
+        ? 0
+        : Convert.ToInt32(ViewBag.RoleId);
+
+    var permissionCodes = ViewBag.PermissionCodes
+        as HashSet<string> ?? new HashSet<string>();
+
+    bool isSuperAdmin = roleId == 1;
+    bool isManager = roleId == 2;
+    bool isStaff = roleId == 3;
+
+    // Nhân viên và phân quyền
+    bool canManageStaff = isSuperAdmin || isManager;
+
+    // Quản lý nhà cung cấp
+    bool canAccessSuppliers = isManager ||
+        (isStaff &&
+        permissionCodes.Contains("SUPPLIER_MANAGE"));
+
+    // Bán hàng POS
+    bool canAccessPOS = isManager ||
+(isStaff &&
+(permissionCodes.Contains("POS_CREATE") ||
+ permissionCodes.Contains("POS_PAYMENT") ||
+ permissionCodes.Contains("POS_DISCOUNT")));
+
+    // Đơn hàng
+    bool canAccessOrders = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("ORDER_VIEW_ALL") ||
+         permissionCodes.Contains("ORDER_VIEW_OWN_SHIFT") ||
+         permissionCodes.Contains("ORDER_CANCEL") ||
+         permissionCodes.Contains("ORDER_REFUND")));
+
+    // Sản phẩm và thực đơn
+    bool canAccessProducts = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("MENU_VIEW") ||
+         permissionCodes.Contains("MENU_MANAGE")));
+
+    // Kho và nguyên liệu
+    bool canAccessInventory = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("INVENTORY_VIEW") ||
+         permissionCodes.Contains("INVENTORY_STOCKTAKE") ||
+         permissionCodes.Contains("INVENTORY_ADJUST") ||
+         permissionCodes.Contains("SUPPLIER_MANAGE") ||
+         permissionCodes.Contains("PURCHASE_CREATE") ||
+         permissionCodes.Contains("PURCHASE_APPROVE") ||
+         permissionCodes.Contains("INVENTORY_WRITE_OFF")));
+
+    // Báo cáo
+    bool canAccessReports = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("REPORT_SHIFT_VIEW") ||
+         permissionCodes.Contains("REPORT_REVENUE_VIEW") ||
+         permissionCodes.Contains("REPORT_PROFIT_VIEW") ||
+         permissionCodes.Contains("REPORT_INVENTORY_VIEW")));
+
+    // Màn hình pha chế
+    bool canAccessKDS = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("KDS_VIEW") ||
+         permissionCodes.Contains("KDS_COMPLETE") ||
+         permissionCodes.Contains("KDS_OUT_OF_STOCK")));
+
+    // Khách hàng
+    bool canAccessCustomers = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("CUSTOMER_VIEW") ||
+         permissionCodes.Contains("CUSTOMER_EDIT") ||
+         permissionCodes.Contains("CUSTOMER_POINTS") ||
+         permissionCodes.Contains("CUSTOMER_DELETE") ||
+         permissionCodes.Contains("CUSTOMER_EXPORT")));
+
+    // Quyền xem công thức
+    bool canAccessRecipes = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("RECIPE_VIEW") ||
+         permissionCodes.Contains("RECIPE_MANAGE")));
+
+    // Cấu hình hệ thống
+    bool canAccessSystemSettings = isSuperAdmin;
+
+    // Phiếu nhập hàng
+    bool canAccessPurchaseReceipts = isManager ||
+        (isStaff &&
+        (permissionCodes.Contains("PURCHASE_CREATE") ||
+         permissionCodes.Contains("PURCHASE_APPROVE")));
+
+    bool hasBusinessFunctions =
+        canAccessPOS ||
+        canAccessOrders ||
+        canAccessProducts ||
+        canAccessInventory ||
+        canAccessReports ||
+        canAccessKDS ||
+        canAccessCustomers ||
+        canAccessRecipes ||
+        canAccessSuppliers ||
+        canAccessPurchaseReceipts;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewBag.Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: #f7f4ef;
+            color: #38271e;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: #38271e;
+            color: white;
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 27px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .brand-sub {
+            text-align: center;
+            color: #d6b99d;
+            font-size: 12px;
+            margin-bottom: 40px;
+        }
+
+        .menu-title {
+            color: #bca18b;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 22px 12px 10px;
+            text-transform: uppercase;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #eee2d7;
+            text-decoration: none;
+            padding: 13px 14px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.2s;
+        }
+
+            .menu-link:hover,
+            .menu-link.active {
+                background: #76523d;
+                color: white;
+            }
+
+            .menu-link i {
+                width: 20px;
+            }
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 75px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            border-bottom: 1px solid #eee5dc;
+        }
+
+            .topbar h5 {
+                margin: 0;
+                font-weight: 700;
+            }
+
+        .user-info {
+            text-align: right;
+        }
+
+            .user-info strong {
+                display: block;
+                font-size: 14px;
+            }
+
+            .user-info span {
+                color: #927965;
+                font-size: 12px;
+            }
+
+        .content {
+            padding: 32px;
+        }
+
+        .welcome {
+            background: linear-gradient(120deg, #4b3022, #946b4d);
+            color: white;
+            padding: 35px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+        }
+
+            .welcome h2 {
+                font-family: 'Playfair Display', serif;
+                font-size: 30px;
+                margin-bottom: 12px;
+            }
+
+            .welcome p {
+                color: #f0dfcf;
+                margin: 0;
+            }
+
+        .section-heading {
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .function-card {
+            background: white;
+            border: 1px solid #eee5dc;
+            border-radius: 12px;
+            padding: 24px;
+            height: 100%;
+            transition: 0.2s;
+        }
+
+            .function-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(65, 42, 28, 0.08);
+            }
+
+        .function-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4e9df;
+            color: #795238;
+            border-radius: 10px;
+            font-size: 21px;
+            margin-bottom: 18px;
+        }
+
+        .function-card h6 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .function-card p {
+            font-size: 13px;
+            color: #8c7b6d;
+            margin: 0;
+        }
+
+        .sidebar-logout {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #76523d;
+        }
+
+        .logout {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f2c9b8;
+            text-decoration: none;
+            padding: 13px 14px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+            .logout:hover {
+                background: #76523d;
+                color: white;
+            }
+
+        .empty-functions {
+            background: white;
+            border: 1px dashed #d6c5b5;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #927965;
+        }
+
+            .empty-functions i {
+                font-size: 35px;
+                margin-bottom: 15px;
+                color: #bca18b;
+            }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">MỘC BREW</div>
+
+        <div class="brand-sub">
+            MANAGEMENT SYSTEM
+        </div>
+
+        <div class="menu-title">Tổng quan</div>
+
+        <a href="@Url.Action("Index", "Home")"
+           class="menu-link active">
+            <i class="fa-solid fa-house"></i>
+            Trang chủ
+        </a>
+
+        <!-- QUẢN LÝ HỆ THỐNG -->
+        @if (canManageStaff || isSuperAdmin)
+        {
+            <div class="menu-title">Quản lý hệ thống</div>
+        }
+
+        @if (canManageStaff)
+        {
+            <a href="@Url.Action("Index", "Staff")" class="menu-link">
+                <i class="fa-solid fa-users"></i>
+                Nhân viên và phân quyền
+            </a>
+        }
+
+        @if (isSuperAdmin)
+        {
+            <a href="@Url.Action("Index", "AdminAccount")" class="menu-link">
+                <i class="fa-solid fa-user-shield"></i>
+                Quản lý Super Admin
+            </a>
+
+            <a href="#" class="menu-link">
+                <i class="fa-solid fa-gear"></i>
+                Cài đặt hệ thống
+            </a>
+
+            <a href="@Url.Action("Index", "OrderRequests")" class="menu-link">
+                <i class="fa-solid fa-file-circle-check"></i>
+                Quản lý yêu cầu hủy đơn / hoàn tiền
+            </a>
+
+        }
+
+        <!-- NGHIỆP VỤ -->
+        @if (hasBusinessFunctions)
+        {
+            <div class="menu-title">Nghiệp vụ</div>
+        }
+
+        @if (canAccessPOS)
+        {
+            <a href="@Url.Action("Index", "Sales")" class="menu-link">
+                <i class="fa-solid fa-cash-register"></i>
+                Bán hàng
+            </a>
+        }
+
+        @if (canAccessOrders)
+        {
+            <a href="#" class="menu-link">
+                <i class="fa-solid fa-receipt"></i>
+                Đơn hàng
+            </a>
+        }
+
+        @if (canAccessProducts)
+        {
+            <a href="@Url.Action("Index", "Products")" class="menu-link">
+                <i class="fa-solid fa-mug-hot"></i>
+                Sản phẩm
+            </a>
+        }
+        @if (canAccessProducts)
+        {
+            <a href="@Url.Action("Index", "Categories")" class="menu-link">
+                <i class="fa-solid fa-layer-group"></i>
+                Danh mục sản phẩm
+            </a>
+        }
+        @if (canAccessInventory)
+        {
+            <a href="@Url.Action("Index", "Ingredients")" class="menu-link">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Kho và nguyên liệu
+            </a>
+        }
+
+        @if (canAccessPurchaseReceipts)
+        {
+            <a href="@Url.Action("Index", "PurchaseReceipts")" class="menu-link">
+                <i class="fa-solid fa-file-invoice"></i>
+                Phiếu nhập hàng
+            </a>
+        }
+        @if (canAccessSuppliers)
+        {
+            <a href="@Url.Action("Index", "Suppliers")" class="menu-link">
+                <i class="fa-solid fa-truck-field"></i>
+                Quản lý nhà cung cấp
+            </a>
+        }
+        @if (canAccessCustomers)
+        {
+            <a href="#" class="menu-link">
+                <i class="fa-solid fa-user-group"></i>
+                Khách hàng
+            </a>
+        }
+
+        @if (canAccessKDS)
+        {
+            <a href="#" class="menu-link">
+                <i class="fa-solid fa-blender"></i>
+                Màn hình pha chế
+            </a>
+        }
+
+        @if (canAccessRecipes)
+        {
+            <a href="@Url.Action("Index", "Recipes")" class="menu-link">
+                <i class="fa-solid fa-book-open"></i>
+                Công thức pha chế
+            </a>
+        }
+
+        @if (canAccessReports)
+        {
+            <a href="@Url.Action("Index", "Reports")" class="menu-link">
+                <i class="fa-solid fa-chart-line"></i>
+                Báo cáo
+            </a>
+        }
+
+
+        <div class="sidebar-logout">
+            <a href="@Url.Action("Logout", "MocBrewAuth")"
+               class="logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Đăng xuất
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <h5>Trang chủ quản trị</h5>
+
+            <div class="user-info">
+                <strong>@ViewBag.FullName</strong>
+                <span>@ViewBag.RoleName</span>
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            <div class="welcome">
+                <h2>
+                    Xin chào, @ViewBag.FullName!
+                </h2>
+
+                <p>
+                    Chào mừng bạn đến với hệ thống quản lý MỘC BREW.
+                    Chúc bạn có một ngày làm việc hiệu quả.
+                </p>
+            </div>
+
+            <h5 class="section-heading">
+                Danh mục chức năng
+            </h5>
+
+            <div class="row g-4">
+
+                <!-- NHÂN VIÊN VÀ PHÂN QUYỀN -->
+                @if (canManageStaff)
+                {
+                    <div class="col-md-6">
+                        <a href="@Url.Action("Index", "Staff")"
+                           class="text-decoration-none text-dark">
+
+                            <div class="function-card">
+                                <div class="function-icon">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+
+                                <h6>Nhân viên và phân quyền</h6>
+                                <p>
+                                    Quản lý tài khoản nhân viên và quyền truy cập.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+                }
+
+                <!-- QUẢN LÝ SUPER ADMIN -->
+                @if (isSuperAdmin)
+                {
+                    <div class="col-md-6">
+                        <a href="@Url.Action("Index", "AdminAccount")"
+                           class="text-decoration-none text-dark">
+
+                            <div class="function-card">
+                                <div class="function-icon">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+
+                                <h6>Quản lý Super Admin</h6>
+
+                                <p>
+                                    Quản lý tài khoản Super Admin,
+                                    tạo mới, chỉnh sửa và khóa tài khoản.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-gear"></i>
+                            </div>
+
+                            <h6>Cài đặt hệ thống</h6>
+
+                            <p>
+                                Quản lý cấu hình và thiết lập kỹ thuật hệ thống.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- BÁN HÀNG -->
+                @if (canAccessPOS)
+                {
+                    <div class="col-md-6">
+                        <a href="@Url.Action("Index", "Sales")"
+                           class="text-decoration-none text-dark">
+
+                            <div class="function-card">
+                                <div class="function-icon">
+                                    <i class="fa-solid fa-cash-register"></i>
+                                </div>
+
+                                <h6>Bán hàng</h6>
+
+                                <p>
+                                    Quản lý hoạt động bán hàng tại cửa hàng.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+                }
+                <!-- ĐƠN HÀNG -->
+                @if (canAccessOrders)
+                {
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+
+                            <h6>Đơn hàng</h6>
+                            <p>
+                                Theo dõi và quản lý thông tin đơn hàng.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- SẢN PHẨM -->
+                @if (canAccessProducts)
+                {
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-mug-hot"></i>
+                            </div>
+
+                            <h6>Sản phẩm</h6>
+                            <p>
+                                Quản lý danh mục đồ uống và sản phẩm.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- KHO -->
+                @if (canAccessInventory)
+                {
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                            </div>
+
+                            <h6>Kho và nguyên liệu</h6>
+                            <p>
+                                Theo dõi tồn kho, nhập hàng và nguyên liệu pha chế.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- KHÁCH HÀNG -->
+                @if (canAccessCustomers)
+                {
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-user-group"></i>
+                            </div>
+
+                            <h6>Khách hàng</h6>
+                            <p>
+                                Quản lý thông tin và dữ liệu khách hàng.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- MÀN HÌNH PHA CHẾ -->
+                @if (canAccessKDS)
+                {
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-blender"></i>
+                            </div>
+
+                            <h6>Màn hình pha chế</h6>
+                            <p>
+                                Theo dõi và cập nhật trạng thái pha chế món.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <!-- CÔNG THỨC -->
+                @if (canAccessRecipes)
+                {
+                    <div class="col-md-6">
+                        <div class="function-card">
+                            <div class="function-icon">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+
+                            <h6>Công thức pha chế</h6>
+                            <p>
+                                Xem và quản lý công thức, định lượng nguyên liệu.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+
+                <!-- BÁO CÁO -->
+                @if (canAccessReports)
+                {
+                    <div class="col-md-6">
+                        <a href="@Url.Action("Index", "Reports")"
+                           class="text-decoration-none text-dark">
+
+                            <div class="function-card">
+                                <div class="function-icon">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+
+                                <h6>Báo cáo thống kê</h6>
+                                <p>
+                                    Tổng hợp số liệu và kết quả kinh doanh.
+                                </p>
+                            </div>
+
+                        </a>
+                    </div>
+                }
+
+
+                <!-- STAFF KHÔNG CÓ QUYỀN -->
+                @if (isStaff && !hasBusinessFunctions)
+                {
+                    <div class="col-12">
+                        <div class="empty-functions">
+                            <i class="fa-solid fa-lock d-block"></i>
+
+                            <h6>Chưa được cấp quyền chức năng</h6>
+
+                            <p class="mb-0">
+                                Vui lòng liên hệ Store Manager để được cấp quyền truy cập hệ thống.
+                            </p>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

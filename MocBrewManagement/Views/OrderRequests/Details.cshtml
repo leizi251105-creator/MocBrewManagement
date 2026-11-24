@@ -1,0 +1,440 @@
+﻿
+@model MocBrewManagement.ViewModels.OrderRequestDetailViewModel
+
+@{
+    ViewBag.Title = "Chi tiết yêu cầu";
+    Layout = null;
+
+    bool isRefund = Model.RequestType == "Refund";
+    bool isPending = Model.RequestStatus == "Pending";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chi tiết yêu cầu | MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f7f3ed;
+            font-family: Arial, sans-serif;
+            color: #3e3025;
+        }
+
+        .page-header {
+            background: #4b3023;
+            color: white;
+            padding: 22px 30px;
+        }
+
+        .brand {
+            font-size: 25px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .container-main {
+            max-width: 1150px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 27px;
+            font-weight: bold;
+            color: #4b3023;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #68462f;
+            border-bottom: 1px solid #eee5db;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            color: #8a8178;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .reason-box {
+            background: #fff8ec;
+            border-left: 4px solid #b78a51;
+            padding: 16px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+        }
+
+        .status {
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff1cc;
+            color: #9a6700;
+        }
+
+        .approved {
+            background: #d9f2df;
+            color: #176b35;
+        }
+
+        .rejected {
+            background: #f8dddd;
+            color: #a52828;
+        }
+
+        .btn-brown {
+            background: #795238;
+            color: white;
+            border: none;
+        }
+
+            .btn-brown:hover {
+                background: #5c3b29;
+                color: white;
+            }
+
+        .review-area {
+            background: #faf7f2;
+            border: 1px solid #eee5db;
+            border-radius: 10px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="page-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="brand">
+                <i class="fa-solid fa-mug-hot me-2"></i>
+                MỘC BREW
+            </div>
+
+            <a href="@Url.Action("Index", "Home")"
+               class="btn btn-light btn-sm">
+                <i class="fa-solid fa-house me-1"></i>
+                Trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="container-main">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="page-title">
+                    <i class="fa-solid fa-file-circle-check me-2"></i>
+                    Chi tiết yêu cầu #@Model.RequestId
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Kiểm tra thông tin trước khi phê duyệt hoặc từ chối.
+                </p>
+            </div>
+
+            <a href="@Url.Action("Index", "OrderRequests")"
+               class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Danh sách yêu cầu
+            </a>
+        </div>
+
+        <div class="detail-card">
+
+            <h5 class="section-title">Thông tin yêu cầu</h5>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="info-label">Mã yêu cầu</div>
+                    <div class="info-value">#@Model.RequestId</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Loại yêu cầu</div>
+                    <div class="info-value">
+                        @if (isRefund)
+                        {
+                            <span class="text-warning">
+                                <i class="fa-solid fa-money-bill-transfer me-1"></i>
+                                Yêu cầu hoàn tiền
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">
+                                <i class="fa-solid fa-ban me-1"></i>
+                                Yêu cầu hủy đơn
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Trạng thái yêu cầu</div>
+                    <div class="info-value">
+                        @if (Model.RequestStatus == "Pending")
+                        {
+                            <span class="status pending">Chờ duyệt</span>
+                        }
+                        else if (Model.RequestStatus == "Approved")
+                        {
+                            <span class="status approved">Đã duyệt</span>
+                        }
+                        else
+                        {
+                            <span class="status rejected">Đã từ chối</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Người gửi yêu cầu</div>
+                    <div class="info-value">@Model.RequestedByName</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Thời gian gửi</div>
+                    <div class="info-value">
+                        @Model.RequestedAt.ToString("dd/MM/yyyy HH:mm:ss")
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Mã đơn hàng</div>
+                    <div class="info-value">@Model.OrderCode</div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="info-label mb-2">Lý do yêu cầu</div>
+                <div class="reason-box">@Model.Reason</div>
+            </div>
+
+        </div>
+
+        <div class="detail-card">
+
+            <h5 class="section-title">Thông tin đơn hàng</h5>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="info-label">Người nhận</div>
+                    <div class="info-value">@Model.ReceiverName</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Số điện thoại</div>
+                    <div class="info-value">@Model.ReceiverPhone</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Hình thức nhận hàng</div>
+                    <div class="info-value">@Model.FulfillmentMethod</div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="info-label">Địa chỉ giao hàng</div>
+                    <div class="info-value">
+                        @(string.IsNullOrWhiteSpace(Model.DeliveryAddress)
+                            ? "Khách nhận tại cửa hàng"
+                            : Model.DeliveryAddress)
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Tiền hàng</div>
+                    <div class="info-value">@Model.SubTotal.ToString("N0") đ</div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Giảm giá</div>
+                    <div class="info-value">@Model.DiscountAmount.ToString("N0") đ</div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Phí vận chuyển</div>
+                    <div class="info-value">@Model.ShippingFee.ToString("N0") đ</div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-label">Tổng thanh toán</div>
+                    <div class="info-value text-danger fs-5">
+                        @Model.TotalAmount.ToString("N0") đ
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Phương thức thanh toán</div>
+                    <div class="info-value">@Model.PaymentMethod</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Trạng thái thanh toán</div>
+                    <div class="info-value">@Model.PaymentStatus</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Trạng thái đơn hàng</div>
+                    <div class="info-value">@Model.OrderStatus</div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.OrderNote))
+            {
+                <div class="mt-4">
+                    <div class="info-label">Ghi chú đơn hàng</div>
+                    <div class="info-value">@Model.OrderNote</div>
+                </div>
+            }
+
+        </div>
+
+        @if (isPending)
+        {
+            <div class="detail-card">
+
+                <h5 class="section-title">
+                    <i class="fa-solid fa-clipboard-check me-2"></i>
+                    Xử lý yêu cầu
+                </h5>
+
+                <div class="review-area">
+
+                    <p>
+                        Vui lòng kiểm tra thông tin trước khi đưa ra quyết định.
+                        Hệ thống sẽ ghi nhận tài khoản Super Admin và thời gian xử lý.
+                    </p>
+
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Các nút phê duyệt và từ chối sẽ được kết nối ở bước tiếp theo.
+                    </div>
+
+
+                    <label class="form-label fw-bold">
+                        Ghi chú xử lý
+                    </label>
+
+                    <form method="post" id="approveForm"
+                          action="@Url.Action("Approve", "OrderRequests")">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="RequestId"
+                               value="@Model.RequestId" />
+
+                        <textarea class="form-control"
+                                  name="ReviewNote"
+                                  id="reviewNote"
+                                  rows="3"
+                                  maxlength="500"
+                                  placeholder="Nhập ghi chú xử lý..."></textarea>
+
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+
+                            <button type="submit"
+                                    class="btn btn-success"
+                                    onclick="return confirm('Bạn có chắc chắn muốn PHÊ DUYỆT yêu cầu này không?');">
+                                <i class="fa-solid fa-check me-1"></i>
+                                Phê duyệt
+                            </button>
+
+                        </div>
+                    </form>
+
+                    <form method="post"
+                          id="rejectForm"
+                          action="@Url.Action("Reject", "OrderRequests")"
+                          class="mt-2">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="RequestId"
+                               value="@Model.RequestId" />
+
+                        <input type="hidden" name="ReviewNote"
+                               id="rejectNote" />
+
+                        <button type="submit"
+                                class="btn btn-danger"
+                                onclick="
+                document.getElementById('rejectNote').value =
+                document.getElementById('reviewNote').value;
+                return confirm('Bạn có chắc chắn muốn TỪ CHỐI yêu cầu này không?');
+            ">
+                            <i class="fa-solid fa-xmark me-1"></i>
+                            Từ chối
+                        </button>
+
+                    </form>
+
+
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="detail-card">
+                <h5 class="section-title">Kết quả xử lý</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="info-label">Người xử lý</div>
+                        <div class="info-value">
+                            @(Model.ReviewedByName ?? "Chưa có")
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-label">Thời gian xử lý</div>
+                        <div class="info-value">
+                            @(Model.ReviewedAt.HasValue
+                                ? Model.ReviewedAt.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                : "Chưa có")
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="info-label">Ghi chú xử lý</div>
+                        <div class="info-value">
+                            @(string.IsNullOrWhiteSpace(Model.ReviewNote)
+                                ? "Không có ghi chú"
+                                : Model.ReviewNote)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </main>
+
+</body>
+</html>

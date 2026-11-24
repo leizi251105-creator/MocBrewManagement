@@ -1,0 +1,376 @@
+﻿
+@model MocBrewManagement.ViewModels.RecipeCreateEditViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Thêm công thức pha chế";
+
+    var productSizes = ViewBag.ProductSizes as IEnumerable<SelectListItem>;
+    var ingredients = ViewBag.Ingredients as IEnumerable<MocBrewManagement.ViewModels.RecipeIngredientViewModel>;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Thêm công thức pha chế - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f6f2;
+            color: #35443b;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 18px;
+        }
+
+        .page-header {
+            background: #315b45;
+            color: white;
+            padding: 25px 30px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #315b45;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .ingredient-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 150px 180px 45px;
+            gap: 12px;
+            align-items: end;
+            padding: 12px;
+            border: 1px solid #e4e9e3;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+            .ingredient-row .form-control,
+            .ingredient-row .form-select {
+                min-width: 0;
+            }
+
+        .btn-green {
+            background: #315b45;
+            color: white;
+            border: none;
+        }
+
+            .btn-green:hover {
+                background: #244735;
+                color: white;
+            }
+
+        @@media (max-width: 700px) {
+            .ingredient-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+                .ingredient-row .ingredient-name {
+                    grid-column: 1 / -1;
+                }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <!-- TIÊU ĐỀ -->
+        <div class="page-header">
+            <h3 class="mb-2">
+                <i class="fa-solid fa-flask me-2"></i>
+                Thêm công thức pha chế
+            </h3>
+
+            <div class="opacity-75">
+                Thiết lập nguyên liệu và định lượng cho từng sản phẩm, size.
+            </div>
+        </div>
+
+        @using (Html.BeginForm("Create", "Recipes", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- THÔNG TIN CÔNG THỨC -->
+            <div class="content-card">
+
+                <h5 class="section-title">
+                    <i class="fa-solid fa-mug-hot me-2"></i>
+                    Thông tin công thức
+                </h5>
+
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.ProductSizeId, new { @class = "form-label" })
+
+                    @Html.DropDownListFor(
+                             m => m.ProductSizeId,
+                             productSizes ?? Enumerable.Empty<SelectListItem>(),
+                             "-- Chọn sản phẩm và size --",
+                             new { @class = "form-select", required = "required" }
+                         )
+
+                    @Html.ValidationMessageFor(
+                             m => m.ProductSizeId,
+                             "",
+                             new { @class = "text-danger" }
+                         )
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Description, new { @class = "form-label" })
+
+                    @Html.TextAreaFor(
+                             m => m.Description,
+                             new
+                             {
+                                 @class = "form-control",
+                                 rows = "3",
+                                 placeholder = "Ví dụ: Công thức pha chế Cà phê sữa size M..."
+                             }
+                         )
+
+                    @Html.ValidationMessageFor(
+                             m => m.Description,
+                             "",
+                             new { @class = "text-danger" }
+                         )
+                </div>
+
+            </div>
+
+            <!-- ĐỊNH LƯỢNG NGUYÊN LIỆU -->
+            <div class="content-card">
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+
+                    <h5 class="section-title mb-0">
+                        <i class="fa-solid fa-boxes-stacked me-2"></i>
+                        Định lượng nguyên liệu
+                    </h5>
+
+                    <button type="button"
+                            class="btn btn-outline-success"
+                            id="btnAddIngredient">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        Thêm nguyên liệu
+                    </button>
+
+                </div>
+
+                <p class="text-muted small">
+                    Chọn nguyên liệu và nhập lượng sử dụng để pha chế một sản phẩm theo size đã chọn.
+                </p>
+
+                <!-- NƠI HIỂN THỊ CÁC DÒNG NGUYÊN LIỆU -->
+                <div id="ingredientContainer">
+                </div>
+
+                <!-- DANH SÁCH NGUYÊN LIỆU ĐƯỢC LẤY TỪ CONTROLLER -->
+                <select id="ingredientOptionsSource" style="display:none;">
+                    <option value="">-- Chọn nguyên liệu --</option>
+
+                    @if (ingredients != null)
+                    {
+                        foreach (var item in ingredients)
+                        {
+                            <option value="@item.IngredientId"
+                                    data-unit="@item.Unit">
+                                @item.IngredientName
+                            </option>
+                        }
+                    }
+                </select>
+
+                <!-- THÔNG BÁO KHI CHƯA CÓ DÒNG NGUYÊN LIỆU -->
+                <div id="emptyIngredientMessage"
+                     class="text-center text-muted py-4">
+                    Chưa có dòng nguyên liệu. Nhấn "Thêm nguyên liệu" để bắt đầu.
+                </div>
+
+            </div>
+
+            <!-- NÚT QUAY LẠI VÀ LƯU -->
+            <div class="d-flex justify-content-between flex-wrap gap-2 mb-5">
+
+                <a href="@Url.Action("Index", "Recipes")"
+                   class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Quay lại
+                </a>
+
+                <button type="submit" class="btn btn-green px-4">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>
+                    Lưu công thức
+                </button>
+
+            </div>
+        }
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const container = document.getElementById("ingredientContainer");
+            const addButton = document.getElementById("btnAddIngredient");
+            const sourceSelect = document.getElementById("ingredientOptionsSource");
+            const emptyMessage = document.getElementById("emptyIngredientMessage");
+
+            // Kiểm tra các thành phần HTML
+            if (!container || !addButton || !sourceSelect || !emptyMessage) {
+                console.error("Không tìm thấy thành phần cần thiết của trang công thức.");
+                return;
+            }
+
+            // Lấy danh sách nguyên liệu từ danh sách ẩn
+            const ingredientOptions = sourceSelect.innerHTML;
+
+            // Cập nhật tên các trường để gửi dữ liệu về Controller
+            function updateIndexes() {
+
+                const rows = container.querySelectorAll(".ingredient-row");
+
+                rows.forEach(function (row, index) {
+
+                    const ingredientSelect = row.querySelector(".ingredient-select");
+                    const quantityInput = row.querySelector(".quantity-input");
+
+                    ingredientSelect.name = "Ingredients[" + index + "].IngredientId";
+
+                    quantityInput.name = "Ingredients[" + index + "].QuantityRequired";
+                });
+
+                // Hiện thông báo nếu chưa có dòng nguyên liệu
+                emptyMessage.style.display = rows.length === 0 ? "block" : "none";
+            }
+
+            // Tạo một dòng nguyên liệu mới
+            function createIngredientRow() {
+
+                const row = document.createElement("div");
+
+                row.className = "ingredient-row";
+
+                row.innerHTML = `
+                        <div class="ingredient-name">
+                            <label class="form-label">Nguyên liệu</label>
+
+                            <select class="form-select ingredient-select" required>
+                                ${ingredientOptions}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Định lượng</label>
+
+                            <input type="number"
+                                   class="form-control quantity-input"
+                                   min="0.001"
+                                   step="0.001"
+                                   placeholder="Nhập lượng"
+                                   required />
+                        </div>
+
+                        <div>
+                            <label class="form-label">Đơn vị</label>
+
+                            <input type="text"
+                                   class="form-control unit-display"
+                                   placeholder="Đơn vị"
+                                   readonly />
+                        </div>
+
+                        <div>
+                            <button type="button"
+                                    class="btn btn-outline-danger btnRemoveIngredient"
+                                    title="Xóa nguyên liệu">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                container.appendChild(row);
+
+                updateIndexes();
+            }
+
+            // SỰ KIỆN: THÊM NGUYÊN LIỆU
+            addButton.addEventListener("click", function () {
+
+                createIngredientRow();
+
+            });
+
+            // SỰ KIỆN: CHỌN NGUYÊN LIỆU VÀ HIỂN THỊ ĐƠN VỊ
+            container.addEventListener("change", function (event) {
+
+                if (event.target.classList.contains("ingredient-select")) {
+
+                    const selectedOption = event.target.options[event.target.selectedIndex];
+
+                    const unit = selectedOption
+                        ? selectedOption.getAttribute("data-unit") || ""
+                        : "";
+
+                    const row = event.target.closest(".ingredient-row");
+
+                    const unitInput = row.querySelector(".unit-display");
+
+                    unitInput.value = unit;
+                }
+
+            });
+
+            // SỰ KIỆN: XÓA NGUYÊN LIỆU
+            container.addEventListener("click", function (event) {
+
+                const removeButton = event.target.closest(".btnRemoveIngredient");
+
+                if (removeButton) {
+
+                    const row = removeButton.closest(".ingredient-row");
+
+                    row.remove();
+
+                    updateIndexes();
+                }
+
+            });
+
+            // Khởi tạo trạng thái ban đầu
+            updateIndexes();
+
+        });
+    </script>
+
+</body>
+</html>

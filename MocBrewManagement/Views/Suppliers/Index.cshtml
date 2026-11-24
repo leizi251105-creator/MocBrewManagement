@@ -1,0 +1,259 @@
+﻿
+@model IEnumerable<MocBrewManagement.ViewModels.SupplierViewModel>
+
+@{
+    Layout = null;
+    ViewBag.Title = "Quản lý nhà cung cấp";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý nhà cung cấp - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f2ed;
+            font-family: Arial, sans-serif;
+            color: #3d3028;
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .page-title {
+            color: #68452f;
+            font-weight: 700;
+        }
+
+        .btn-main {
+            background: #68452f;
+            color: white;
+            border: none;
+        }
+
+            .btn-main:hover {
+                background: #4e3323;
+                color: white;
+            }
+
+        .table thead th {
+            background: #f3eee8;
+            color: #68452f;
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .search-box {
+            max-width: 350px;
+        }
+
+        .supplier-count {
+            color: #88796e;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h3 class="page-title">
+                    <i class="fa-solid fa-truck-field me-2"></i>
+                    Quản lý nhà cung cấp
+                </h3>
+                <div class="text-muted">
+                    Theo dõi và quản lý thông tin các nhà cung cấp nguyên liệu
+                </div>
+            </div>
+
+            <a href="@Url.Action("Create", "Suppliers")" class="btn btn-main">
+                <i class="fa-solid fa-plus me-2"></i>
+                Thêm nhà cung cấp
+            </a>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                @TempData["Error"]
+            </div>
+        }
+
+        <div class="panel">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <h5 class="mb-1">Danh sách nhà cung cấp</h5>
+                    <div class="supplier-count">
+                        Tổng số: @Model.Count() nhà cung cấp
+                    </div>
+                </div>
+
+                <div class="input-group search-box">
+                    <span class="input-group-text bg-white">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text"
+                           id="searchSupplier"
+                           class="form-control"
+                           placeholder="Tìm tên, số điện thoại, email..." />
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle" id="supplierTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Mã NCC</th>
+                            <th>Tên nhà cung cấp</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Địa chỉ</th>
+                            <th>Mã số thuế</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.SupplierId</td>
+                                    <td class="fw-semibold">@item.SupplierName</td>
+                                    <td>@(item.Phone ?? "—")</td>
+                                    <td>@(item.Email ?? "—")</td>
+                                    <td>@(item.Address ?? "—")</td>
+                                    <td>@(item.TaxCode ?? "—")</td>
+
+                                    <td class="text-center">
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Ngừng hoạt động</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            @* Nút Sửa *@
+                                            <a href="@Url.Action("Edit", "Suppliers", new { id = item.SupplierId })"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Chỉnh sửa">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+
+                                            @* Nút Thiết lập nguyên liệu *@
+                                            <a href="@Url.Action("Index", "SupplierIngredients", new { id = item.SupplierId })"
+                                               class="btn btn-sm btn-outline-info"
+                                               title="Thiết lập nguyên liệu">
+                                                <i class="fa-solid fa-boxes-stacked"></i>
+                                            </a>
+
+                                            @* Nút Ngừng hoạt động / Kích hoạt *@
+                                            @using (Html.BeginForm("ToggleStatus", "Suppliers",
+                                                new { id = item.SupplierId },
+                                                FormMethod.Post,
+                                                new { @class = "d-inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")"
+                                                        title="@(item.IsActive ? "Ngừng hoạt động" : "Kích hoạt")"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn thay đổi trạng thái nhà cung cấp này?');">
+                                                    <i class="fa-solid @(item.IsActive ? "fa-ban" : "fa-check")"></i>
+                                                </button>
+                                            }
+
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    Chưa có nhà cung cấp nào.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noSearchResult" class="text-center text-muted py-3" style="display:none;">
+                Không tìm thấy nhà cung cấp phù hợp.
+            </div>
+
+            <div class="mt-3">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Về trang chủ
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("searchSupplier").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll("#supplierTable tbody tr");
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const text = row.innerText.toLowerCase();
+                const matched = text.includes(keyword);
+
+                row.style.display = matched ? "" : "none";
+
+                if (matched) visibleCount++;
+            });
+
+            document.getElementById("noSearchResult").style.display =
+                visibleCount === 0 && rows.length > 0 ? "block" : "none";
+        });
+    </script>
+
+</body>
+</html>

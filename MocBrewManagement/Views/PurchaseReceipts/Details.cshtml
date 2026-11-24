@@ -1,0 +1,261 @@
+﻿
+@model MocBrewManagement.ViewModels.PurchaseReceiptViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Chi tiết phiếu nhập hàng";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chi tiết phiếu nhập hàng - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f2ed;
+            font-family: Arial, sans-serif;
+            color: #3d3028;
+        }
+
+        .page {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 0 18px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .page-title {
+            color: #68452f;
+            font-weight: 700;
+        }
+
+        .info-label {
+            color: #88796e;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        .table thead th {
+            background: #f3eee8;
+            color: #68452f;
+            white-space: nowrap;
+        }
+
+        .total {
+            font-size: 23px;
+            color: #8a552f;
+            font-weight: 700;
+        }
+
+        .btn-back {
+            background: #68452f;
+            color: white;
+        }
+
+            .btn-back:hover {
+                background: #4e3323;
+                color: white;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                @TempData["Error"]
+            </div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="page-title">
+                    <i class="fa-solid fa-file-invoice me-2"></i>
+                    Chi tiết phiếu nhập hàng
+                </h3>
+                <div class="text-muted">Thông tin hàng hóa và giá trị phiếu nhập</div>
+            </div>
+
+            <a href="@Url.Action("Index", "PurchaseReceipts")" class="btn btn-back">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
+
+        <div class="panel">
+            <h5 class="mb-4">Thông tin phiếu nhập</h5>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="info-label">Mã phiếu</div>
+                    <div class="info-value">@Model.ReceiptCode</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Nhà cung cấp</div>
+                    <div class="info-value">@Model.SupplierName</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Người tạo phiếu</div>
+                    <div class="info-value">@Model.EmployeeName</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Ngày nhập</div>
+                    <div class="info-value">@Model.ReceiptDate.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Trạng thái</div>
+                    @if (Model.Status == "Approved")
+                    {
+                        <span class="badge bg-success">Đã duyệt</span>
+                    }
+                    else if (Model.Status == "Rejected")
+                    {
+                        <span class="badge bg-danger">Đã từ chối</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Ghi chú</div>
+                    <div class="info-value">@(string.IsNullOrWhiteSpace(Model.Note) ? "Không có" : Model.Note)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h5 class="mb-4">Danh sách nguyên liệu nhập</h5>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Nguyên liệu</th>
+                            <th>Đơn vị</th>
+                            <th class="text-end">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th>Hạn sử dụng</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Details != null && Model.Details.Any())
+                        {
+                            var index = 1;
+
+                            foreach (var item in Model.Details)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@item.IngredientName</td>
+                                    <td>@item.Unit</td>
+                                    <td class="text-end">@item.Quantity.ToString("N3")</td>
+                                    <td class="text-end">@item.UnitPrice.ToString("N0") đ</td>
+                                    <td>
+                                        @(item.ExpiryDate.HasValue
+                                        ? item.ExpiryDate.Value.ToString("dd/MM/yyyy")
+                                        : "Không có")
+                                    </td>
+                                    <td class="text-end fw-bold">@item.Amount.ToString("N0") đ</td>
+                                </tr>
+
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    Phiếu nhập chưa có nguyên liệu.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end mt-4">
+                <div class="text-muted">Tổng giá trị phiếu nhập</div>
+                <div class="total">@Model.TotalAmount.ToString("N0") đ</div>
+            </div>
+        </div>
+
+        @if (Model.Status == "Pending" && ViewBag.CanApprove == true)
+        {
+            <div class="panel">
+                <h5 class="mb-3">Xử lý phiếu nhập hàng</h5>
+
+                <p class="text-muted">
+                    Sau khi duyệt, số lượng nguyên liệu sẽ được tự động cộng vào kho.
+                </p>
+
+                <div class="d-flex gap-2">
+                    @using (Html.BeginForm("Approve", "PurchaseReceipts",
+                        new { id = Model.PurchaseReceiptId },
+                        FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-success"
+                                onclick="return confirm('Bạn có chắc chắn muốn duyệt phiếu nhập này? Tồn kho sẽ được cập nhật.');">
+                            <i class="fa-solid fa-check me-1"></i>
+                            Duyệt phiếu
+                        </button>
+                    }
+
+                    @using (Html.BeginForm("Reject", "PurchaseReceipts",
+                        new { id = Model.PurchaseReceiptId },
+                        FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-danger"
+                                onclick="return confirm('Bạn có chắc chắn muốn từ chối phiếu nhập này?');">
+                            <i class="fa-solid fa-xmark me-1"></i>
+                            Từ chối phiếu
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+</body>
+</html>

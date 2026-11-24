@@ -1,0 +1,621 @@
+﻿
+@model MocBrewManagement.Models.ProductCreateViewModel
+
+@using System.Linq
+@using System.Collections.Generic
+@using System.Web.Mvc
+
+@{
+    ViewBag.Title = "Thêm sản phẩm";
+    Layout = null;
+
+    var categoryOptions = new List<SelectListItem>();
+
+    if (Model.Categories != null)
+    {
+        var parentCategories = Model.Categories
+            .Where(c => c.ParentCategoryId == null)
+            .OrderBy(c => c.CategoryName)
+            .ToList();
+
+        foreach (var parent in parentCategories)
+        {
+            var group = new SelectListGroup
+            {
+                Name = parent.CategoryName
+            };
+
+            var children = Model.Categories
+                .Where(c => c.ParentCategoryId == parent.CategoryId && c.IsActive)
+                .OrderBy(c => c.CategoryName)
+                .ToList();
+
+            foreach (var child in children)
+            {
+                categoryOptions.Add(new SelectListItem
+                {
+                    Value = child.CategoryId.ToString(),
+                    Text = child.CategoryName,
+                    Group = group
+                });
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Thêm sản phẩm - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f2ed;
+            font-family: 'Segoe UI', sans-serif;
+            color: #38291f;
+        }
+
+        .main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .title {
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #89796d;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid #eee7df;
+            box-shadow: 0 5px 20px rgba(60,40,25,.04);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 750;
+            margin-bottom: 20px;
+            color: #543a29;
+        }
+
+        .form-label {
+            font-weight: 650;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 9px;
+            border-color: #e5ddd5;
+            padding: 11px 13px;
+            font-size: 13px;
+        }
+
+            .form-control:focus,
+            .form-select:focus {
+                border-color: #947052;
+                box-shadow: 0 0 0 3px rgba(148,112,82,.12);
+            }
+
+        .btn-brown {
+            background: #65452f;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+            .btn-brown:hover {
+                background: #493020;
+                color: white;
+            }
+
+        .btn-back {
+            background: white;
+            color: #65452f;
+            border: 1px solid #e5ddd5;
+            padding: 10px 16px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .upload-area {
+            border: 2px dashed #d9c9b9;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            background: #faf8f5;
+            cursor: pointer;
+        }
+
+            .upload-area i {
+                font-size: 35px;
+                color: #9a795e;
+                margin-bottom: 12px;
+            }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 220px;
+            border-radius: 12px;
+            object-fit: contain;
+            display: none;
+            margin: 15px auto 0;
+        }
+
+        .form-check-input:checked {
+            background-color: #65452f;
+            border-color: #65452f;
+        }
+
+        .text-danger {
+            font-size: 12px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        @@media(max-width:600px) {
+            .form-card {
+                padding: 18px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main">
+
+        <!-- TIÊU ĐỀ -->
+        <div class="header">
+
+            <div>
+                <div class="title">
+                    <i class="fa-solid fa-circle-plus me-2"
+                       style="color:#8b6548"></i>
+                    Thêm sản phẩm mới
+                </div>
+
+                <div class="subtitle">
+                    Tạo sản phẩm mới trong thực đơn MỘC BREW
+                </div>
+            </div>
+
+            <a href="@Url.Action("Index", "Products")" class="btn-back">
+                <i class="fa-solid fa-arrow-left me-2"></i>
+                Quay lại danh sách
+            </a>
+
+        </div>
+
+        <!-- FORM -->
+        <div class="form-card">
+
+            @using (Html.BeginForm(
+                "Create",
+                "Products",
+                FormMethod.Post,
+                new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- THÔNG BÁO LỖI TỪ CONTROLLER -->
+                if (TempData["ProductError"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>
+                        <strong>Dữ liệu chưa hợp lệ:</strong>
+                        @TempData["ProductError"]
+                    </div>
+                }
+
+                <!-- THÔNG BÁO LỖI VALIDATION -->
+                @Html.ValidationSummary(
+                         false,
+                         "",
+                         new { @class = "alert alert-danger" })
+
+                <div class="row g-4">
+
+                    <!-- CỘT TRÁI: THÔNG TIN VÀ GIÁ -->
+                    <div class="col-lg-7">
+
+                        <div class="section-title">
+                            <i class="fa-solid fa-mug-hot me-2"></i>
+                            Thông tin sản phẩm
+                        </div>
+
+                        <!-- TÊN SẢN PHẨM -->
+                        <div class="mb-3">
+
+                            @Html.LabelFor(
+                                     m => m.ProductName,
+                                     "Tên sản phẩm",
+                                     new { @class = "form-label" })
+
+                            <span class="text-danger">*</span>
+
+                            @Html.TextBoxFor(
+                                     m => m.ProductName,
+                                     new
+                                     {
+                                         @class = "form-control",
+                                         placeholder = "Ví dụ: Cà phê sữa đá"
+                                     })
+
+                            @Html.ValidationMessageFor(
+                                     m => m.ProductName,
+                                     "",
+                                     new { @class = "text-danger" })
+
+                        </div>
+
+                        <!-- DANH MỤC -->
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Danh mục sản phẩm
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            @Html.DropDownListFor(
+                                     m => m.CategoryId,
+                                     categoryOptions,
+                                     "-- Chọn danh mục sản phẩm --",
+                                     new { @class = "form-select" })
+
+                            @Html.ValidationMessageFor(
+                                     m => m.CategoryId,
+                                     "",
+                                     new { @class = "text-danger" })
+
+                            <div class="text-muted small mt-2">
+                                <i class="fa-solid fa-circle-info me-1"></i>
+                                Vui lòng chọn danh mục con phù hợp với sản phẩm.
+                            </div>
+
+                        </div>
+
+                        <!-- MÔ TẢ -->
+                        <div class="mb-4">
+
+                            @Html.LabelFor(
+                                     m => m.Description,
+                                     "Mô tả sản phẩm",
+                                     new { @class = "form-label" })
+
+                            @Html.TextAreaFor(
+                                     m => m.Description,
+                                     new
+                                     {
+                                         @class = "form-control",
+                                         rows = "4",
+                                         placeholder = "Nhập mô tả sản phẩm..."
+                                     })
+
+                            @Html.ValidationMessageFor(
+                                     m => m.Description,
+                                     "",
+                                     new { @class = "text-danger" })
+
+                        </div>
+
+                        <hr />
+
+                        <!-- GIÁ SIZE -->
+                        <div class="form-section mt-4">
+
+                            <div class="section-title">
+                                <i class="fa-solid fa-tags me-2"></i>
+                                Giá bán theo kích thước
+                            </div>
+
+                            <div class="alert alert-light border small">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                Mỗi sản phẩm có thể có mức giá riêng theo từng Size.
+                                Size S bắt buộc, Size M và L có thể bỏ trống.
+                            </div>
+
+                            <div class="row g-3">
+
+                                <!-- SIZE S -->
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+                                        Size S <span class="text-danger">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        @Html.TextBoxFor(
+                                                 m => m.PriceS,
+                                                 new
+                                                 {
+                                                     @class = "form-control",
+                                                     type = "number",
+                                                     min = "1",
+                                                     step = "1000",
+                                                     placeholder = "30000"
+                                                 })
+
+                                        <span class="input-group-text">VNĐ</span>
+
+                                    </div>
+
+                                    @Html.ValidationMessageFor(
+                                             m => m.PriceS,
+                                             "",
+                                             new { @class = "text-danger" })
+
+                                </div>
+
+                                <!-- SIZE M -->
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+                                        Size M
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        @Html.TextBoxFor(
+                                                 m => m.PriceM,
+                                                 new
+                                                 {
+                                                     @class = "form-control",
+                                                     type = "number",
+                                                     min = "1",
+                                                     step = "1000",
+                                                     placeholder = "36000"
+                                                 })
+
+                                        <span class="input-group-text">VNĐ</span>
+
+                                    </div>
+
+                                    @Html.ValidationMessageFor(
+                                             m => m.PriceM,
+                                             "",
+                                             new { @class = "text-danger" })
+
+                                </div>
+
+                                <!-- SIZE L -->
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+                                        Size L
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        @Html.TextBoxFor(
+                                                 m => m.PriceL,
+                                                 new
+                                                 {
+                                                     @class = "form-control",
+                                                     type = "number",
+                                                     min = "1",
+                                                     step = "1000",
+                                                     placeholder = "40000"
+                                                 })
+
+                                        <span class="input-group-text">VNĐ</span>
+
+                                    </div>
+
+                                    @Html.ValidationMessageFor(
+                                             m => m.PriceL,
+                                             "",
+                                             new { @class = "text-danger" })
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <!-- TRẠNG THÁI -->
+                        <div class="form-section mt-4">
+
+                            <div class="section-title">
+                                <i class="fa-solid fa-sliders me-2"></i>
+                                Trạng thái sản phẩm
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+
+                                @Html.CheckBoxFor(
+                                         m => m.IsActive,
+                                         new { @class = "form-check-input" })
+
+                                <label class="form-check-label fw-semibold">
+                                    Kinh doanh sản phẩm
+                                </label>
+
+                                <div class="text-muted small">
+                                    Bật để sản phẩm ở trạng thái đang bán.
+                                </div>
+
+                            </div>
+
+                            <div class="form-check form-switch">
+
+                                @Html.CheckBoxFor(
+                                         m => m.IsFeatured,
+                                         new { @class = "form-check-input" })
+
+                                <label class="form-check-label fw-semibold">
+                                    Sản phẩm nổi bật
+                                </label>
+
+                                <div class="text-muted small">
+                                    Đánh dấu sản phẩm nổi bật trên thực đơn.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CỘT PHẢI: HÌNH ẢNH -->
+                    <div class="col-lg-5">
+
+                        <div class="section-title">
+                            <i class="fa-regular fa-image me-2"></i>
+                            Hình ảnh sản phẩm
+                        </div>
+
+                        <label class="form-label">
+                            Chọn ảnh sản phẩm
+                        </label>
+
+                        <div class="upload-area d-block"
+                             onclick="document.getElementById('ImageFile').click();">
+                            <i class="fa-solid fa-cloud-arrow-up d-block"></i>
+
+                            <div class="fw-bold">
+                                Nhấn để chọn hình ảnh
+                            </div>
+
+                            <div class="text-muted small mt-2">
+                                JPG, JPEG, PNG, WEBP
+                            </div>
+
+                            <div class="text-muted small">
+                                Dung lượng tối đa 5 MB
+                            </div>
+
+                            <img id="imagePreview"
+                                 class="preview-image"
+                                 alt="Xem trước ảnh sản phẩm" />
+
+                        </div>
+
+                            <input type="file"
+                                   id="ImageFile"
+                                   name="ImageFile"
+                                   accept=".jpg,.jpeg,.png,.webp"
+                                   class="form-control mt-3" />
+
+                            @Html.ValidationMessage(
+                                          "ImageFile",
+                                          "",
+                                          new { @class = "text-danger" })
+
+                            <div class="alert alert-light mt-3 small">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                Ảnh sẽ được lưu trong thư mục
+                                Content/Images/Products.
+                            </div>
+
+                        </div>
+
+                </div>
+
+                <!-- NÚT LƯU -->
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2 flex-wrap">
+
+                    <a href="@Url.Action("Index", "Products")"
+                       class="btn-back">
+                        Hủy
+                    </a>
+
+                    <button type="submit" class="btn-brown">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>
+                        Lưu sản phẩm
+                    </button>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <!-- XEM TRƯỚC HÌNH ẢNH -->
+    <script>
+        document.getElementById("ImageFile").addEventListener(
+            "change",
+            function (event) {
+
+                const file = event.target.files[0];
+                const preview = document.getElementById("imagePreview");
+
+                if (!file) {
+                    preview.style.display = "none";
+                    preview.src = "";
+                    return;
+                }
+
+                const allowedTypes = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp"
+                ];
+
+                if (!allowedTypes.includes(file.type)) {
+                    alert("Vui lòng chọn ảnh JPG, PNG hoặc WEBP.");
+                    event.target.value = "";
+                    preview.style.display = "none";
+                    preview.src = "";
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("Ảnh không được vượt quá 5 MB.");
+                    event.target.value = "";
+                    preview.style.display = "none";
+                    preview.src = "";
+                    return;
+                }
+
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = "block";
+            }
+        );
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+﻿
+@model MocBrewManagement.Models.CategoryCreateViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Thêm danh mục - MỘC BREW";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f7f5f1;
+            font-family: Arial, sans-serif;
+            color: #382b23;
+        }
+
+        .main {
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(60,40,20,.06);
+        }
+
+        .page-title {
+            color: #513629;
+            font-weight: 700;
+            font-size: 25px;
+        }
+
+        .btn-brown {
+            background: #704b35;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+        }
+
+            .btn-brown:hover {
+                background: #513629;
+                color: white;
+            }
+
+        .form-control, .form-select {
+            padding: 11px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="form-card">
+
+            <h3 class="page-title mb-2">Thêm danh mục mới</h3>
+            <p class="text-secondary mb-4">
+                Tạo danh mục cha hoặc danh mục con cho sản phẩm.
+            </p>
+
+            @using (Html.BeginForm("Create", "Categories",
+                FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Tên danh mục
+                    </label>
+
+                    @Html.TextBoxFor(m => m.CategoryName,
+                             new
+                             {
+                                 @class = "form-control",
+                                 placeholder = "Nhập tên danh mục..."
+                             })
+
+                    @Html.ValidationMessageFor(m => m.CategoryName,
+                             "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Danh mục cha
+                    </label>
+
+                    @Html.DropDownListFor(
+                             m => m.ParentCategoryId,
+                             Model.ParentCategories,
+                             "-- Không chọn (tạo danh mục cha) --",
+                             new { @class = "form-select" })
+
+                    @Html.ValidationMessageFor(m => m.ParentCategoryId,
+                             "", new { @class = "text-danger" })
+
+                    <small class="text-secondary">
+                        Để trống nếu muốn tạo danh mục cha.
+                        Chọn danh mục cha nếu muốn tạo danh mục con.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Mô tả
+                    </label>
+
+                    @Html.TextAreaFor(m => m.Description,
+                             new
+                             {
+                                 @class = "form-control",
+                                 rows = "3",
+                                 placeholder = "Mô tả danh mục..."
+                             })
+                </div>
+
+                <div class="form-check mb-4">
+                    @Html.CheckBoxFor(m => m.IsActive,
+                             new { @class = "form-check-input" })
+
+                    <label class="form-check-label">
+                        Đang hoạt động
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn-brown">
+                        Lưu danh mục
+                    </button>
+
+                    <a href="@Url.Action("Index", "Categories")"
+                       class="btn btn-outline-secondary">
+                        Quay lại
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

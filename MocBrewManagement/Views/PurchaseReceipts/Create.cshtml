@@ -1,0 +1,463 @@
+﻿
+@model MocBrewManagement.ViewModels.PurchaseReceiptViewModel
+
+@{
+    ViewBag.Title = "Tạo phiếu nhập hàng";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tạo phiếu nhập - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f3ef;
+            color: #3b3029;
+            font-family: Arial, sans-serif;
+        }
+
+        .main-container {
+            max-width: 1250px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.04);
+        }
+
+        h3, h5 {
+            color: #5b3927;
+            font-weight: 700;
+        }
+
+        .btn-brown {
+            background: #795238;
+            color: white;
+            border: none;
+        }
+
+            .btn-brown:hover {
+                background: #5b3927;
+                color: white;
+            }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .table thead th {
+            background: #f4eee8;
+            color: #5b3927;
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .total-box {
+            background: #f8f1e9;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: right;
+        }
+
+        .total-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: #795238;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3><i class="fa-solid fa-file-circle-plus me-2"></i>Tạo phiếu nhập hàng</h3>
+                <p class="text-muted mb-0">
+                    Ghi nhận nguyên liệu và đơn giá nhập từ nhà cung cấp
+                </p>
+            </div>
+
+            <a href="@Url.Action("Index", "PurchaseReceipts")"
+               class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Create", "PurchaseReceipts",
+            FormMethod.Post, new { id = "receiptForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+
+            <div class="content-card">
+                <h5 class="mb-4">Thông tin phiếu nhập</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nhà cung cấp *</label>
+
+                        @Html.DropDownListFor(
+                                 m => m.SupplierId,
+                                 Model.Suppliers,
+                                 "-- Chọn nhà cung cấp --",
+                                 new { @class = "form-select" })
+
+                        @Html.ValidationMessageFor(
+                                 m => m.SupplierId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày lập phiếu</label>
+
+                        <input type="text"
+                               class="form-control"
+                               value="@DateTime.Now.ToString("dd/MM/yyyy HH:mm")"
+                               readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Ghi chú</label>
+
+                        @Html.TextAreaFor(
+                                 m => m.Note,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     rows = "2",
+                                     placeholder = "Nhập ghi chú nếu có..."
+                                 })
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Chi tiết nguyên liệu nhập</h5>
+
+                    <span class="text-muted small">
+                        Nguyên liệu sẽ tự động hiển thị theo nhà cung cấp.
+                    </span>
+                </div>
+                <div id="ingredientMessage" class="alert alert-info">
+                    Vui lòng chọn nhà cung cấp để tải danh sách nguyên liệu.
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="detailTable">
+                        <thead>
+                            <tr>
+                                <th style="min-width:220px">Nguyên liệu</th>
+                                <th style="min-width:110px">Số lượng</th>
+                                <th style="min-width:150px">Đơn giá nhập</th>
+                                <th style="min-width:150px">Thành tiền</th>
+                                <th style="min-width:160px">Hạn sử dụng</th>
+                                <th style="width:60px">Xóa</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="detailBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="total-box">
+                    <div class="text-muted mb-1">Tổng tiền phiếu nhập</div>
+                    <div class="total-number" id="grandTotal">0 đ</div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-5">
+                <a href="@Url.Action("Index", "PurchaseReceipts")"
+                   class="btn btn-outline-secondary px-4">
+                    Hủy
+                </a>
+
+                <button type="submit" class="btn btn-brown px-4">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Lưu phiếu nhập
+                </button>
+            </div>
+        }
+
+    </div>
+
+    <script>
+
+const ingredientsUrl = '@Url.Action("GetIngredientsBySupplier", "PurchaseReceipts")';
+
+const supplierSelect = document.getElementById("SupplierId");
+const detailBody = document.getElementById("detailBody");
+const ingredientMessage = document.getElementById("ingredientMessage");
+const receiptForm = document.getElementById("receiptForm");
+
+let rowIndex = 0;
+
+// Chuyển nội dung thành chuỗi HTML an toàn
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function (char) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[char];
+    });
+}
+
+// Tải nguyên liệu theo nhà cung cấp
+async function loadIngredients() {
+    const supplierId = supplierSelect.value;
+
+    detailBody.innerHTML = "";
+    rowIndex = 0;
+    calculateTotal();
+
+    if (!supplierId) {
+        ingredientMessage.className = "alert alert-info";
+        ingredientMessage.textContent =
+            "Vui lòng chọn nhà cung cấp để tải danh sách nguyên liệu.";
+        return;
+    }
+
+    ingredientMessage.className = "alert alert-info";
+    ingredientMessage.textContent = "Đang tải danh sách nguyên liệu...";
+
+    try {
+        const response = await fetch(
+            ingredientsUrl + "?supplierId=" + encodeURIComponent(supplierId)
+        );
+
+        if (!response.ok) {
+            throw new Error("Không thể tải danh sách nguyên liệu.");
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || "Không tải được nguyên liệu.");
+        }
+
+        if (!result.data || result.data.length === 0) {
+            ingredientMessage.className = "alert alert-warning";
+            ingredientMessage.textContent =
+                "Nhà cung cấp này chưa được thiết lập nguyên liệu.";
+            return;
+        }
+
+        ingredientMessage.className = "alert alert-success";
+        ingredientMessage.textContent =
+            "Đã tải " + result.data.length +
+            " nguyên liệu. Đánh dấu những nguyên liệu thực tế cần nhập.";
+
+        result.data.forEach(function (item) {
+            addIngredientRow(item);
+        });
+
+    } catch (error) {
+        ingredientMessage.className = "alert alert-danger";
+        ingredientMessage.textContent = error.message;
+    }
+}
+
+// Tạo dòng nguyên liệu
+function addIngredientRow(item) {
+    const index = rowIndex++;
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>
+            <div class="form-check mb-1">
+                <input type="checkbox"
+                       class="form-check-input include-ingredient">
+                <label class="form-check-label fw-semibold">
+                    ${escapeHtml(item.IngredientName)}
+                </label>
+            </div>
+
+            <small class="text-muted">
+                Đơn vị: ${escapeHtml(item.Unit)}
+            </small>
+
+            <input type="hidden"
+                   name="Details[${index}].IngredientId"
+                   value="${item.IngredientId}"
+                   disabled>
+        </td>
+
+        <td>
+            <input type="number"
+                   name="Details[${index}].Quantity"
+                   class="form-control quantity"
+                   min="0.001"
+                   step="0.001"
+                   placeholder="Số lượng"
+                   disabled>
+        </td>
+
+        <td>
+            <input type="number"
+                   name="Details[${index}].UnitPrice"
+                   class="form-control unit-price"
+                   min="0.01"
+                   step="0.01"
+                   placeholder="Đơn giá"
+                   disabled>
+        </td>
+
+        <td class="text-end fw-bold amount">0 đ</td>
+
+        <td>
+            <input type="date"
+                   name="Details[${index}].ExpiryDate"
+                   class="form-control"
+                   disabled>
+        </td>
+
+        <td class="text-center">
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="removeRow(this)">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </td>
+    `;
+
+    const checkbox = tr.querySelector(".include-ingredient");
+    const inputs = tr.querySelectorAll(
+        'input[type="hidden"], input[type="number"], input[type="date"]'
+    );
+
+    checkbox.addEventListener("change", function () {
+        inputs.forEach(function (input) {
+            input.disabled = !checkbox.checked;
+
+            if (input.type === "number") {
+                input.required = checkbox.checked;
+            }
+        });
+
+        calculateTotal();
+    });
+
+    detailBody.appendChild(tr);
+}
+
+// Xóa dòng nguyên liệu
+function removeRow(button) {
+    button.closest("tr").remove();
+    reindexRows();
+    calculateTotal();
+}
+
+// Đánh lại chỉ số Details
+function reindexRows() {
+    const rows = detailBody.querySelectorAll("tr");
+
+    rows.forEach(function (row, index) {
+        row.querySelectorAll("[name]").forEach(function (input) {
+            input.name = input.name.replace(
+                /Details\[\d+\]/,
+                "Details[" + index + "]"
+            );
+        });
+    });
+
+    rowIndex = rows.length;
+}
+
+// Tính tổng tiền
+function calculateTotal() {
+    let total = 0;
+
+    detailBody.querySelectorAll("tr").forEach(function (row) {
+        const checkbox = row.querySelector(".include-ingredient");
+
+        if (!checkbox.checked) {
+            row.querySelector(".amount").textContent = "0 đ";
+            return;
+        }
+
+        const quantity =
+            parseFloat(row.querySelector(".quantity").value) || 0;
+
+        const price =
+            parseFloat(row.querySelector(".unit-price").value) || 0;
+
+        const amount = quantity * price;
+        total += amount;
+
+        row.querySelector(".amount").textContent =
+            amount.toLocaleString("vi-VN") + " đ";
+    });
+
+    document.getElementById("grandTotal").textContent =
+        total.toLocaleString("vi-VN") + " đ";
+}
+
+// Theo dõi thay đổi số lượng và đơn giá
+detailBody.addEventListener("input", function (event) {
+    if (event.target.classList.contains("quantity") ||
+        event.target.classList.contains("unit-price")) {
+        calculateTotal();
+    }
+});
+
+// Khi chọn nhà cung cấp
+supplierSelect.addEventListener("change", loadIngredients);
+
+// Kiểm tra trước khi gửi phiếu
+receiptForm.addEventListener("submit", function (event) {
+    const rows = Array.from(detailBody.querySelectorAll("tr"));
+
+    const selectedRows = rows.filter(function (row) {
+        return row.querySelector(".include-ingredient").checked;
+    });
+
+    if (selectedRows.length === 0) {
+        event.preventDefault();
+        alert("Vui lòng chọn ít nhất một nguyên liệu cần nhập.");
+        return;
+    }
+
+    // Loại bỏ những nguyên liệu không được chọn
+    rows.forEach(function (row) {
+        if (!row.querySelector(".include-ingredient").checked) {
+            row.remove();
+        }
+    });
+
+    reindexRows();
+
+    if (!receiptForm.reportValidity()) {
+        event.preventDefault();
+    }
+});
+
+// Khởi tạo nếu đã có nhà cung cấp được chọn
+if (supplierSelect.value) {
+    loadIngredients();
+}
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,475 @@
+﻿
+@model MocBrewManagement.ViewModels.InventoryReportViewModel
+
+@{
+    ViewBag.Title = "Báo cáo tồn kho";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Báo cáo tồn kho - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f5f6f8;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        .header {
+            background: #fff;
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .brand {
+            color: #654321;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            padding: 28px;
+        }
+
+        .report-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 22px;
+            height: 100%;
+        }
+
+        .stat-label {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #f5eee6;
+            color: #79532d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .table th {
+            background: #f7f5f2;
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .btn-brown {
+            background: #79532d;
+            color: #fff;
+        }
+
+            .btn-brown:hover {
+                background: #5e3d20;
+                color: #fff;
+            }
+
+        .nav-back {
+            color: #654321;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid #eee;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="brand">
+                <i class="fa-solid fa-mug-hot"></i>
+                MỘC BREW
+            </div>
+
+            <a href="@Url.Action("Index", "Reports")" class="nav-back">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại báo cáo
+            </a>
+        </div>
+    </div>
+
+    <div class="container-fluid main-content">
+
+        <!-- TIÊU ĐỀ -->
+        <div class="mb-4">
+            <h3 class="fw-bold">Báo cáo tồn kho</h3>
+            <p class="text-muted">
+                Theo dõi số lượng nguyên liệu, tình trạng tồn kho và biến động kho.
+            </p>
+        </div>
+
+        <!-- BỘ LỌC THỜI GIAN -->
+        <div class="section-card">
+            @using (Html.BeginForm("Inventory", "Reports", FormMethod.Get))
+            {
+                <div class="row align-items-end g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Từ ngày</label>
+                        <input type="date"
+                               name="fromDate"
+                               class="form-control"
+                               value="@Model.FromDate.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Đến ngày</label>
+                        <input type="date"
+                               name="toDate"
+                               class="form-control"
+                               value="@Model.ToDate.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-brown">
+                            <i class="fa-solid fa-filter"></i>
+                            Lọc báo cáo
+                        </button>
+
+                        <a href="@Url.Action("Inventory", "Reports")"
+                           class="btn btn-outline-secondary">
+                            Đặt lại
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- THỐNG KÊ TỔNG QUAN -->
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-3">
+                <div class="report-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stat-label">Tổng nguyên liệu</div>
+                            <div class="stat-value">@Model.TotalIngredients</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="report-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stat-label">Dưới mức tối thiểu</div>
+                            <div class="stat-value text-warning">
+                                @Model.LowStockIngredients
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="report-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stat-label">Nguyên liệu hết hàng</div>
+                            <div class="stat-value text-danger">
+                                @Model.OutOfStockIngredients
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="report-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stat-label">Giao dịch trong kỳ</div>
+                            <div class="stat-value">
+                                @Model.Transactions.Count
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TỔNG HỢP NHẬP XUẤT -->
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="report-card">
+                    <div class="stat-label">Tổng số lượng nhập</div>
+                    <div class="stat-value text-success">
+                        @Model.TotalImportQuantity.ToString("N3")
+                    </div>
+                    <small class="text-muted">
+                        Tổng số lượng các giao dịch Import trong kỳ
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="report-card">
+                    <div class="stat-label">Tổng số lượng xuất</div>
+                    <div class="stat-value text-danger">
+                        @Model.TotalExportQuantity.ToString("N3")
+                    </div>
+                    <small class="text-muted">
+                        Tổng số lượng các giao dịch Export trong kỳ
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="report-card">
+                    <div class="stat-label">Tổng số lượng điều chỉnh</div>
+                    <div class="stat-value text-warning">
+                        @Model.TotalAdjustmentQuantity.ToString("N3")
+                    </div>
+                    <small class="text-muted">
+                        Tổng số lượng điều chỉnh trong kỳ
+                    </small>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- DANH SÁCH TỒN KHO -->
+        <div class="section-card">
+            <h5 class="section-title">
+                <i class="fa-solid fa-boxes-stacked text-secondary"></i>
+                Danh sách tồn kho nguyên liệu
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Nguyên liệu</th>
+                            <th>Đơn vị</th>
+                            <th>Tồn hiện tại</th>
+                            <th>Mức tồn tối thiểu</th>
+                            <th>Tình trạng</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Ingredients.Any())
+                        {
+                            var index = 1;
+
+                            foreach (var item in Model.Ingredients)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td class="fw-semibold">@item.IngredientName</td>
+                                    <td>@item.Unit</td>
+                                    <td>@item.CurrentStock.ToString("N3")</td>
+                                    <td>@item.MinimumStock.ToString("N3")</td>
+                                    <td>
+                                        @if (item.StockStatus == "Hết hàng")
+                                        {
+                                            <span class="badge bg-danger">Hết hàng</span>
+                                        }
+                                        else if (item.StockStatus == "Dưới mức tối thiểu")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Dưới mức tối thiểu
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Đủ hàng</span>
+                                        }
+                                    </td>
+                                </tr>
+
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    Không có nguyên liệu.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LỊCH SỬ GIAO DỊCH -->
+        <div class="section-card">
+            <h5 class="section-title">
+                <i class="fa-solid fa-clock-rotate-left text-secondary"></i>
+                Lịch sử giao dịch kho
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã giao dịch</th>
+                            <th>Thời gian</th>
+                            <th>Nguyên liệu</th>
+                            <th>Loại giao dịch</th>
+                            <th>Số lượng</th>
+                            <th>Người thực hiện</th>
+                            <th>Mã tham chiếu</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Transactions.Any())
+                        {
+                            foreach (var item in Model.Transactions)
+                            {
+                                <tr>
+                                    <td>@item.TransactionId</td>
+                                    <td>@item.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@item.IngredientName</td>
+                                    <td>
+                                        @if (item.TransactionType == "Import")
+                                        {
+                                            <span class="badge bg-success">Nhập kho</span>
+                                        }
+                                        else if (item.TransactionType == "Export")
+                                        {
+                                            <span class="badge bg-danger">Xuất kho</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Điều chỉnh</span>
+                                        }
+                                    </td>
+                                    <td>@item.Quantity.ToString("N3") @item.Unit</td>
+                                    <td>@item.EmployeeName</td>
+                                    <td>@item.ReferenceCode</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    Không có giao dịch trong khoảng thời gian này.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LỊCH SỬ KIỂM KÊ -->
+        <div class="section-card">
+            <h5 class="section-title">
+                <i class="fa-solid fa-clipboard-check text-secondary"></i>
+                Lịch sử kiểm kê kho
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã kiểm kê</th>
+                            <th>Thời gian</th>
+                            <th>Nguyên liệu</th>
+                            <th>Tồn hệ thống</th>
+                            <th>Tồn thực tế</th>
+                            <th>Chênh lệch</th>
+                            <th>Nhân viên</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Stocktakes.Any())
+                        {
+                            foreach (var item in Model.Stocktakes)
+                            {
+                                <tr>
+                                    <td>@item.StocktakeId</td>
+                                    <td>@item.StocktakeDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@item.IngredientName</td>
+                                    <td>@item.SystemStock.ToString("N3") @item.Unit</td>
+                                    <td>@item.ActualStock.ToString("N3") @item.Unit</td>
+                                    <td class="@(item.Difference < 0 ? "text-danger" : (item.Difference > 0 ? "text-success" : "")) fw-semibold">
+                                        @(item.Difference > 0 ? "+" : "")
+                                        @item.Difference.ToString("N3") @item.Unit
+                                    </td>
+                                    <td>@item.EmployeeName</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    Không có dữ liệu kiểm kê trong khoảng thời gian này.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center text-muted py-3">
+            MỘC BREW - Hệ thống quản lý cửa hàng
+        </div>
+
+    </div>
+
+</body>
+</html>

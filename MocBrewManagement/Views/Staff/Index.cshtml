@@ -1,0 +1,931 @@
+﻿
+@model IEnumerable<MocBrewManagement.Models.Account>
+
+@{
+    ViewBag.Title = "Quản lý nhân viên";
+    Layout = null;
+
+    string keyword = ViewBag.Keyword as string;
+    int currentPage = (int)ViewBag.Page;
+    int totalPages = (int)ViewBag.TotalPages;
+    int totalResults = (int)ViewBag.TotalResults;
+    int pageSize = (int)ViewBag.PageSize;
+
+    int? selectedRoleId = ViewBag.SelectedRoleId == null
+        ? (int?)null
+        : (int)ViewBag.SelectedRoleId;
+
+    int startNumber = totalResults == 0
+        ? 0
+        : (currentPage - 1) * pageSize + 1;
+
+    int endNumber = Math.Min(currentPage * pageSize, totalResults);
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Quản lý nhân viên - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+          rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f7f5f1;
+            color: #35251c;
+            font-family: 'DM Sans', Arial, sans-serif;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #35251c;
+            color: white;
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 0 12px 30px;
+            border-bottom: 1px solid rgba(255,255,255,.12);
+        }
+
+            .brand h4 {
+                font-family: 'Playfair Display', serif;
+                font-weight: 700;
+                letter-spacing: 1px;
+                margin-bottom: 5px;
+            }
+
+            .brand small {
+                color: #cbb9aa;
+                font-size: 12px;
+            }
+
+        .menu-label {
+            color: #a99788;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 25px 12px 10px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d9cec5;
+            text-decoration: none;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+            .sidebar-link i {
+                width: 18px;
+                text-align: center;
+            }
+
+            .sidebar-link:hover,
+            .sidebar-link.active {
+                background: #79543c;
+                color: white;
+            }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,.12);
+        }
+
+        /* Main */
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 76px;
+            background: white;
+            border-bottom: 1px solid #eee9e2;
+            padding: 0 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar-title {
+            font-size: 13px;
+            color: #8a7c70;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #eadfd3;
+            color: #79543c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .user-info small {
+            color: #918478;
+            font-size: 11px;
+        }
+
+        .content {
+            padding: 32px 35px;
+            max-width: 1600px;
+            margin: auto;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+            .page-heading h2 {
+                font-family: 'Playfair Display', serif;
+                font-weight: 700;
+                font-size: 27px;
+                margin-bottom: 6px;
+            }
+
+            .page-heading p {
+                color: #918478;
+                font-size: 13px;
+                margin: 0;
+            }
+
+        .btn-coffee {
+            background: #79543c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+            .btn-coffee:hover {
+                background: #5c3d2c;
+                color: white;
+            }
+
+        /* Statistics */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #eee9e2;
+            border-radius: 12px;
+            padding: 19px 21px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .icon-brown {
+            background: #f1e7de;
+            color: #79543c;
+        }
+
+        .icon-green {
+            background: #e8f3eb;
+            color: #348354;
+        }
+
+        .icon-red {
+            background: #faeaea;
+            color: #c35a5a;
+        }
+
+        .stat-label {
+            color: #918478;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* Staff table */
+        .staff-panel {
+            background: white;
+            border: 1px solid #eee9e2;
+            border-radius: 13px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 22px 24px 17px;
+            border-bottom: 1px solid #eee9e2;
+        }
+
+            .panel-header h5 {
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            .panel-header p {
+                font-size: 12px;
+                color: #918478;
+                margin: 0;
+            }
+
+        .filter-area {
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f0ece6;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 430px;
+        }
+
+            .search-box i {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #a99b8e;
+            }
+
+        .search-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 14px 0 40px;
+            border: 1px solid #e8e1d9;
+            border-radius: 8px;
+            outline: none;
+            font-size: 13px;
+        }
+
+            .search-input:focus,
+            .filter-select:focus {
+                border-color: #98765d;
+                box-shadow: 0 0 0 3px rgba(121,84,60,.09);
+            }
+
+        .filter-select {
+            height: 42px;
+            min-width: 180px;
+            border: 1px solid #e8e1d9;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 13px;
+            color: #554438;
+            outline: none;
+            background: white;
+        }
+
+        .btn-filter {
+            height: 42px;
+            padding: 0 17px;
+            border: 1px solid #79543c;
+            border-radius: 8px;
+            background: #79543c;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .btn-reset {
+            height: 42px;
+            padding: 0 14px;
+            border: 1px solid #e8e1d9;
+            border-radius: 8px;
+            background: white;
+            color: #725b4a;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .table-area {
+            padding: 0 24px;
+        }
+
+        .staff-table {
+            margin: 0;
+            font-size: 13px;
+        }
+
+            .staff-table thead th {
+                background: #faf8f5;
+                color: #887769;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+                padding: 15px 12px;
+                border-bottom: 1px solid #eee9e2;
+                white-space: nowrap;
+            }
+
+            .staff-table tbody td {
+                padding: 16px 12px;
+                vertical-align: middle;
+                border-bottom: 1px solid #f1eee9;
+            }
+
+            .staff-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .staff-table tbody tr:hover {
+                background: #fdfbf8;
+            }
+
+        .employee-name {
+            font-weight: 700;
+            color: #403025;
+            margin-bottom: 3px;
+        }
+
+        .employee-code {
+            color: #9a8b7e;
+            font-size: 11px;
+        }
+
+        .account-name {
+            font-weight: 600;
+            color: #6d503b;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #f1e9e1;
+            color: #76543c;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #eaf5ed;
+            color: #368153;
+        }
+
+        .status-locked {
+            background: #fbecec;
+            color: #c14e4e;
+        }
+
+        .empty-state {
+            padding: 45px 15px !important;
+            text-align: center;
+            color: #9a8b7e;
+        }
+
+            .empty-state i {
+                display: block;
+                font-size: 28px;
+                margin-bottom: 12px;
+                color: #c5b6a8;
+            }
+
+        /* Pagination */
+        .panel-footer {
+            padding: 17px 24px;
+            border-top: 1px solid #eee9e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-text {
+            color: #918478;
+            font-size: 12px;
+        }
+
+        .pagination {
+            margin: 0;
+            gap: 5px;
+        }
+
+            .pagination .page-link {
+                border: 1px solid #e8e1d9;
+                color: #79543c;
+                border-radius: 7px;
+                font-size: 12px;
+                padding: 7px 11px;
+            }
+
+            .pagination .page-item.active .page-link {
+                background: #79543c;
+                border-color: #79543c;
+                color: white;
+            }
+
+            .pagination .page-item.disabled .page-link {
+                color: #c0b5aa;
+                background: #faf8f5;
+            }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                margin-left: 210px;
+            }
+
+            .content {
+                padding: 25px 20px;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .sidebar-bottom {
+                margin-top: 15px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .filter-area {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                max-width: 100%;
+                flex-basis: 100%;
+            }
+
+            .filter-select {
+                flex: 1;
+            }
+
+            .page-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .panel-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <h4><i class="fa-solid fa-mug-hot me-2"></i>MỘC BREW</h4>
+            <small>Hệ thống quản lý cửa hàng</small>
+        </div>
+
+        <div class="menu-label">QUẢN LÝ</div>
+
+        <a href="@Url.Action("Index", "Home")" class="sidebar-link">
+            <i class="fa-solid fa-house"></i>
+            Trang chủ
+        </a>
+
+        <a href="@Url.Action("Index", "Staff")" class="sidebar-link active">
+            <i class="fa-solid fa-users"></i>
+            Nhân viên
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <i class="fa-solid fa-cash-register"></i>
+            Bán hàng POS
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <i class="fa-solid fa-receipt"></i>
+            Đơn hàng
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <i class="fa-solid fa-mug-saucer"></i>
+            Sản phẩm
+        </a>
+
+        <a href="@Url.Action("Index", "Ingredients")" class="sidebar-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Kho và nguyên liệu
+        </a>
+
+        <div class="sidebar-bottom">
+            <a href="@Url.Action("Logout", "MocBrewAuth")"
+               class="sidebar-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Đăng xuất
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-title">
+                <i class="fa-solid fa-house me-2"></i>
+                Quản lý / Nhân viên
+            </div>
+
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div>
+                    <strong>@Session["MOCBREW_FullName"]</strong>
+                    <small>@ViewBag.CurrentRoleName</small>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            <!-- PAGE HEADING -->
+            <div class="page-heading">
+
+                <div>
+                    <h2>Quản lý nhân viên</h2>
+                    <p>Quản lý tài khoản và thông tin nhân sự của MỘC BREW.</p>
+                </div>
+
+                <a href="@Url.Action("Create", "Staff")"
+                   class="btn-coffee">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm nhân viên
+                </a>
+
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="stats-row">
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-brown">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Tổng số tài khoản</div>
+                        <div class="stat-number">@ViewBag.TotalAccounts</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-green">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Đang hoạt động</div>
+                        <div class="stat-number">@ViewBag.ActiveAccounts</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-red">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-label">Đã khóa</div>
+                        <div class="stat-number">@ViewBag.LockedAccounts</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STAFF PANEL -->
+            <div class="staff-panel">
+
+                <div class="panel-header">
+                    <h5>
+                        <i class="fa-solid fa-address-book me-2"
+                           style="color:#79543c"></i>
+                        Danh sách nhân viên
+                    </h5>
+
+                    <p>Thông tin tài khoản nhân viên trong hệ thống</p>
+                </div>
+
+                <!-- SEARCH AND FILTER -->
+                <form method="get"
+                      action="@Url.Action("Index", "Staff")"
+                      class="filter-area">
+
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input type="text"
+                               name="keyword"
+                               value="@keyword"
+                               class="search-input"
+                               placeholder="Tìm mã NV, họ tên, tài khoản, email..." />
+                    </div>
+
+                    @Html.DropDownList(
+                             "roleId",
+                             (SelectList)ViewBag.RoleFilterList,
+                             "Tất cả vai trò",
+                             new { @class = "filter-select" }
+                         )
+
+                    <button type="submit" class="btn-filter">
+                        <i class="fa-solid fa-filter me-1"></i>
+                        Lọc
+                    </button>
+
+                    <a href="@Url.Action("Index", "Staff")"
+                       class="btn-reset">
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Đặt lại
+                    </a>
+
+                </form>
+
+                <!-- TABLE -->
+                <div class="table-responsive table-area">
+
+                    <table class="table staff-table">
+
+                        <thead>
+                            <tr>
+                                <th style="width:55px">STT</th>
+                                <th>Nhân viên</th>
+                                <th>Tài khoản</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model != null && Model.Any())
+                            {
+                                int stt = startNumber;
+
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-muted">@stt</td>
+
+                                        <td>
+                                            <div class="employee-name">
+                                                @item.FullName
+                                            </div>
+
+                                            <div class="employee-code">
+                                                @(string.IsNullOrEmpty(item.EmployeeCode)
+                                                    ? "Chưa có mã nhân viên"
+                                                    : item.EmployeeCode)
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="account-name">
+                                                @item.Username
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            @(string.IsNullOrEmpty(item.Email)
+                                                ? "Chưa cập nhật"
+                                                : item.Email)
+                                        </td>
+
+                                        <td>
+                                            @(string.IsNullOrEmpty(item.Phone)
+                                                ? "Chưa cập nhật"
+                                                : item.Phone)
+                                        </td>
+
+                                        <td>
+                                            <span class="role-badge">
+                                                @(item.RoleId == 2
+                                                    ? "Store Manager"
+                                                    : item.RoleId == 3
+                                                        ? "Staff"
+                                                        : "Chưa xác định")
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="status-badge status-active">
+                                                    <i class="fa-solid fa-circle-check"></i>
+                                                    Hoạt động
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge status-locked">
+                                                    <i class="fa-solid fa-circle-xmark"></i>
+                                                    Đã khóa
+                                                </span>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+
+                                                <!-- NÚT SỬA -->
+                                                <a href="@Url.Action("Edit", "Staff", new { id = item.AccountId })"
+                                                   class="btn btn-sm btn-outline-secondary"
+                                                   title="Chỉnh sửa nhân viên">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </a>
+
+                                                <!-- NÚT PHÂN QUYỀN: CHỈ HIỆN VỚI STAFF -->
+                                                @if (item.RoleId == 3)
+                                                {
+                                                    <a href="@Url.Action("Permissions", "Staff", new { id = item.AccountId })"
+                                                       class="btn btn-sm btn-outline-warning"
+                                                       title="Phân quyền nhân viên">
+                                                        <i class="fa-solid fa-user-shield"></i>
+                                                    </a>
+                                                }
+
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    stt++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="empty-state">
+                                        <i class="fa-solid fa-folder-open"></i>
+                                        <strong>Không tìm thấy nhân viên</strong>
+                                        <div class="mt-2">
+                                            Hãy thử từ khóa hoặc bộ lọc khác.
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <!-- FOOTER AND PAGINATION -->
+                <div class="panel-footer">
+
+                    <div class="result-text">
+                        Hiển thị @startNumber - @endNumber
+                        trong tổng số @totalResults kết quả
+                    </div>
+
+                    <nav aria-label="Phân trang nhân viên">
+                        <ul class="pagination">
+
+                            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@(currentPage <= 1 ? "#" : Url.Action("Index", new { keyword = keyword, roleId = selectedRoleId, page = currentPage - 1 }))">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </a>
+                            </li>
+
+                            @for (int p = 1; p <= totalPages; p++)
+                            {
+                                <li class="page-item @(p == currentPage ? "active" : "")">
+                                    <a class="page-link"
+                                       href="@Url.Action("Index", new { keyword = keyword, roleId = selectedRoleId, page = p })">
+                                        @p
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@(currentPage >= totalPages ? "#" : Url.Action("Index", new { keyword = keyword, roleId = selectedRoleId, page = currentPage + 1 }))">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

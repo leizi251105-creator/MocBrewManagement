@@ -1,0 +1,609 @@
+﻿
+@model IEnumerable<MocBrewManagement.Models.SystemLog>
+
+@{
+    Layout = null;
+    ViewBag.Title = "Nhật ký hoạt động - MỘC BREW";
+    var logs = Model ?? Enumerable.Empty<MocBrewManagement.Models.SystemLog>();
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f7f4ef;
+            color: #38271e;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #38271e;
+            color: white;
+            padding: 25px 18px;
+            overflow-y: auto;
+        }
+
+        .brand {
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,.15);
+        }
+
+            .brand h3 {
+                font-family: 'Playfair Display', serif;
+                color: #e7c69b;
+                margin: 10px 0 4px;
+            }
+
+            .brand small {
+                color: #d4c3b3;
+            }
+
+        .menu-title {
+            color: #bca995;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 25px 10px 10px;
+            text-transform: uppercase;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 7px;
+            color: #eee4d9;
+            text-decoration: none;
+            border-radius: 9px;
+            transition: .2s;
+        }
+
+            .menu-link:hover,
+            .menu-link.active {
+                background: #6b4934;
+                color: #fff;
+            }
+
+            .menu-link i {
+                width: 20px;
+            }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 28px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            gap: 15px;
+        }
+
+        .user-info {
+            background: white;
+            padding: 10px 17px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #38271e;
+        }
+
+        .page-description {
+            color: #8a786b;
+            margin-top: 5px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.04);
+            height: 100%;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #f2e7db;
+            color: #805333;
+            font-size: 19px;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 27px;
+            font-weight: 700;
+            color: #38271e;
+        }
+
+        .stat-label {
+            color: #8a786b;
+            font-size: 13px;
+        }
+
+        .content-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.04);
+            margin-top: 25px;
+        }
+
+        .filter-input {
+            border: 1px solid #e5ddd5;
+            border-radius: 8px;
+            padding: 10px 13px;
+        }
+
+        .btn-brown {
+            background: #6b4934;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 17px;
+        }
+
+            .btn-brown:hover {
+                background: #38271e;
+                color: white;
+            }
+
+        .table thead th {
+            background: #f7f4ef;
+            color: #6b4934;
+            font-size: 12px;
+            text-transform: uppercase;
+            padding: 15px 12px;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 15px 12px;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .badge-technical {
+            background: #e8edf8;
+            color: #39568c;
+        }
+
+        .badge-business {
+            background: #e4f3e8;
+            color: #34734b;
+        }
+
+        .action-code {
+            font-weight: 700;
+            color: #6b4934;
+            white-space: nowrap;
+        }
+
+        .description {
+            min-width: 220px;
+            max-width: 350px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 45px 15px;
+            color: #9b8c80;
+        }
+
+        .pagination-info {
+            color: #8a786b;
+            font-size: 13px;
+        }
+
+        .page-btn {
+            border: 1px solid #e5ddd5;
+            background: white;
+            color: #6b4934;
+            padding: 7px 12px;
+            border-radius: 7px;
+            margin-left: 4px;
+        }
+
+            .page-btn.active {
+                background: #6b4934;
+                color: white;
+            }
+
+            .page-btn:disabled {
+                opacity: .4;
+                cursor: not-allowed;
+            }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                width: 75px;
+                padding: 20px 8px;
+            }
+
+            .brand h3,
+            .brand small,
+            .menu-link span,
+            .menu-title {
+                display: none;
+            }
+
+            .menu-link {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .main-content {
+                margin-left: 75px;
+                padding: 20px 12px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-mug-hot fa-2x" style="color:#e7c69b"></i>
+            <h3>MỘC BREW</h3>
+            <small>Management System</small>
+        </div>
+
+        <div class="menu-title">Tổng quan</div>
+
+        <a href="@Url.Action("Index", "Home")" class="menu-link">
+            <i class="fa-solid fa-house"></i>
+            <span>Trang chủ</span>
+        </a>
+
+        <div class="menu-title">Quản trị hệ thống</div>
+
+        <a href="@Url.Action("Index", "AdminAccount")" class="menu-link">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Quản lý Super Admin</span>
+        </a>
+
+        <a href="@Url.Action("Index", "SystemLog")" class="menu-link active">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Nhật ký hoạt động</span>
+        </a>
+
+        <a href="@Url.Action("Logout", "MocBrewAuth")" class="menu-link mt-4">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Đăng xuất</span>
+        </a>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="topbar">
+            <div>
+                <h4 class="page-title">Nhật ký hoạt động hệ thống</h4>
+                <div class="page-description">
+                    Theo dõi và kiểm tra các thao tác quản trị trong MỘC BREW.
+                </div>
+            </div>
+
+            <div class="user-info">
+                <i class="fa-solid fa-user-shield me-2"></i>
+                <strong>@ViewBag.FullName</strong>
+                <span class="text-muted ms-2">Super Admin</span>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div class="stat-number">@ViewBag.TotalLogs</div>
+                    <div class="stat-label">Tổng số nhật ký</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="stat-number">@ViewBag.TechnicalLogs</div>
+                    <div class="stat-label">Nhật ký kỹ thuật</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-briefcase"></i>
+                    </div>
+                    <div class="stat-number">@ViewBag.BusinessLogs</div>
+                    <div class="stat-label">Nhật ký nghiệp vụ</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="content-card">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <h5 class="fw-bold mb-1">Danh sách nhật ký</h5>
+                    <small class="text-muted">
+                        Chi tiết các hoạt động được ghi nhận trong hệ thống
+                    </small>
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-5">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control filter-input"
+                           placeholder="Tìm người thực hiện, nội dung, mã thao tác..." />
+                </div>
+
+                <div class="col-md-3">
+                    <select id="typeFilter" class="form-select filter-input">
+                        <option value="">Tất cả loại nhật ký</option>
+                        <option value="TECHNICAL">Kỹ thuật</option>
+                        <option value="BUSINESS">Nghiệp vụ</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select id="pageSize" class="form-select filter-input">
+                        <option value="10">10 dòng</option>
+                        <option value="20">20 dòng</option>
+                        <option value="50">50 dòng</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-brown w-100"
+                            onclick="resetFilters()">
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Đặt lại
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="logTable">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Người thực hiện</th>
+                            <th>Loại</th>
+                            <th>Mã thao tác</th>
+                            <th>Nội dung</th>
+                            <th>Thời gian</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="logTableBody">
+                        @foreach (var item in logs)
+                        {
+                            <tr class="log-row"
+                                data-type="@item.LogType">
+
+                                <td>#@item.LogId</td>
+
+                                <td>
+                                    <i class="fa-solid fa-user-circle me-1 text-secondary"></i>
+                                    @(item.Account != null
+                                        ? item.Account.FullName
+                                        : "Tài khoản không xác định")
+                                </td>
+
+                                <td>
+                                    @if (item.LogType == "TECHNICAL")
+                                    {
+                                        <span class="badge badge-technical">Kỹ thuật</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-business">Nghiệp vụ</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <span class="action-code">
+                                        @item.ActionCode
+                                    </span>
+                                </td>
+
+                                <td class="description">
+                                    @item.Description
+                                </td>
+
+                                <td style="white-space:nowrap">
+                                    @item.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="emptyMessage" class="empty-state" style="display:none">
+                <i class="fa-solid fa-magnifying-glass fa-2x mb-3"></i>
+                <p class="mb-0">Không tìm thấy nhật ký phù hợp.</p>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+                <div class="pagination-info" id="paginationInfo"></div>
+                <div id="pagination"></div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>const searchInput = document.getElementById("searchInput");
+        const typeFilter = document.getElementById("typeFilter");
+        const pageSizeSelect = document.getElementById("pageSize");
+        const rows = Array.from(document.querySelectorAll(".log-row"));
+
+        let currentPage = 1;
+
+        function getFilteredRows() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            const type = typeFilter.value;
+
+            return rows.filter(row => {
+                const text = row.innerText.toLowerCase();
+                const rowType = row.dataset.type;
+
+                return text.includes(keyword) &&
+                    (type === "" || rowType === type);
+            });
+        }
+
+        function renderTable() {
+            const filteredRows = getFilteredRows();
+            const pageSize = parseInt(pageSizeSelect.value);
+            const totalPages = Math.ceil(filteredRows.length / pageSize);
+
+            if (totalPages > 0 && currentPage > totalPages) {
+                currentPage = totalPages;
+            }
+
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+
+            rows.forEach(row => row.style.display = "none");
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+
+            filteredRows.slice(start, end).forEach(row => {
+                row.style.display = "";
+            });
+
+            document.getElementById("emptyMessage").style.display =
+                filteredRows.length === 0 ? "block" : "none";
+
+            document.getElementById("logTable").style.display =
+                filteredRows.length === 0 ? "none" : "table";
+
+            document.getElementById("paginationInfo").innerText =
+                filteredRows.length === 0
+                    ? "Không có dữ liệu"
+                    : "Hiển thị " + (start + 1) + " - " +
+                      Math.min(end, filteredRows.length) +
+                      " / " + filteredRows.length + " nhật ký";
+
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+
+            if (totalPages <= 1) return;
+
+            const previous = document.createElement("button");
+            previous.className = "page-btn";
+            previous.innerText = "‹";
+            previous.disabled = currentPage === 1;
+            previous.onclick = function () {
+                currentPage--;
+                renderTable();
+            };
+            pagination.appendChild(previous);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement("button");
+                button.className = "page-btn" +
+                    (i === currentPage ? " active" : "");
+                button.innerText = i;
+
+                button.onclick = function () {
+                    currentPage = i;
+                    renderTable();
+                };
+
+                pagination.appendChild(button);
+            }
+
+            const next = document.createElement("button");
+            next.className = "page-btn";
+            next.innerText = "›";
+            next.disabled = currentPage === totalPages;
+            next.onclick = function () {
+                currentPage++;
+                renderTable();
+            };
+            pagination.appendChild(next);
+        }
+
+        function resetFilters() {
+            searchInput.value = "";
+            typeFilter.value = "";
+            pageSizeSelect.value = "10";
+            currentPage = 1;
+            renderTable();
+        }
+
+        searchInput.addEventListener("input", function () {
+            currentPage = 1;
+            renderTable();
+        });
+
+        typeFilter.addEventListener("change", function () {
+            currentPage = 1;
+            renderTable();
+        });
+
+        pageSizeSelect.addEventListener("change", function () {
+            currentPage = 1;
+            renderTable();
+        });
+
+        renderTable();</script>
+
+</body>
+</html>

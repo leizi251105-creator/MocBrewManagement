@@ -1,0 +1,888 @@
+﻿
+@model MocBrewManagement.ViewModels.POSCreateViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Tạo đơn bán hàng - MỘC BREW";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --brown: #65452f;
+            --dark-brown: #422c20;
+            --cream: #f8f5f0;
+            --border: #e9e0d6;
+            --muted: #887b70;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cream);
+            font-family: Arial, sans-serif;
+            color: #38291f;
+        }
+
+        .topbar {
+            height: 65px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: 800;
+            color: var(--brown);
+            letter-spacing: 2px;
+        }
+
+        .main-container {
+            padding: 22px;
+        }
+
+        .page-title {
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            height: 100%;
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .category-btn {
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--brown);
+            border-radius: 20px;
+            padding: 8px 15px;
+            margin: 0 5px 8px 0;
+            font-size: 13px;
+        }
+
+            .category-btn.active,
+            .category-btn:hover {
+                background: var(--brown);
+                color: white;
+            }
+
+        .product-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            height: 100%;
+            transition: .2s;
+            background: white;
+        }
+
+            .product-card:hover {
+                border-color: var(--brown);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,.07);
+            }
+
+        .product-image {
+            width: 100%;
+            height: 125px;
+            object-fit: cover;
+            background: #eee8e0;
+        }
+
+        .product-placeholder {
+            height: 125px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eee8e0;
+            color: #a18c78;
+            font-size: 35px;
+        }
+
+        .product-info {
+            padding: 12px;
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 14px;
+            min-height: 38px;
+        }
+
+        .product-price {
+            color: var(--brown);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .cart-panel {
+            position: sticky;
+            top: 15px;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+        }
+
+        .btn-brown {
+            background: var(--brown);
+            border-color: var(--brown);
+            color: white;
+        }
+
+            .btn-brown:hover {
+                background: var(--dark-brown);
+                color: white;
+            }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .grand-total {
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--brown);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 35px 10px;
+            color: var(--muted);
+        }
+
+        .form-control, .form-select {
+            border-color: var(--border);
+            font-size: 13px;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 14px;
+        }
+
+        .size-option {
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+            .size-option.selected {
+                border: 2px solid var(--brown);
+                background: #f8f2ec;
+            }
+
+        @@media (max-width: 992px) {
+            .cart-panel {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="brand">
+            <i class="fa-solid fa-mug-hot me-2"></i>MỘC BREW
+        </div>
+
+        <div>
+            <a href="@Url.Action("Index", "Sales")"
+               class="btn btn-outline-secondary btn-sm me-2">
+                <i class="fa-solid fa-arrow-left me-1"></i> Bán hàng
+            </a>
+
+            <a href="@Url.Action("Index", "Home")"
+               class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-house me-1"></i> Trang chủ
+            </a>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <div class="mb-4">
+            <div class="page-title">Tạo đơn bán hàng</div>
+            <div class="page-subtitle">
+                Bán hàng trực tiếp tại quầy MỘC BREW
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- KHU VỰC SẢN PHẨM -->
+            <div class="col-lg-8">
+
+                <div class="panel">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="section-title mb-0">
+                            <i class="fa-solid fa-mug-hot me-2"></i>Sản phẩm
+                        </div>
+
+                        <span class="text-muted small">
+                            @Model.Products.Count sản phẩm
+                        </span>
+                    </div>
+
+                    <input type="text"
+                           id="searchProduct"
+                           class="form-control mb-3"
+                           placeholder="Tìm tên sản phẩm..." />
+
+                    <div id="categoryList" class="mb-3">
+                        <button class="category-btn active"
+                                onclick="filterCategory(0, this)">
+                            Tất cả
+                        </button>
+
+                        @foreach (var category in Model.Products
+                            .GroupBy(p => new { p.CategoryId, p.CategoryName })
+                            .Select(g => g.Key))
+                        {
+                            <button class="category-btn"
+                                    onclick="filterCategory(@category.CategoryId, this)">
+                                @category.CategoryName
+                            </button>
+                        }
+                    </div>
+
+                    <div class="row g-3" id="productList">
+
+                        @foreach (var product in Model.Products)
+                        {
+                            var minPrice = product.Sizes.Min(s => s.Price);
+
+                            <div class="col-6 col-md-4 col-xl-3 product-item"
+                                 data-category="@product.CategoryId"
+                                 data-name="@product.ProductName.ToLower()">
+
+                                <div class="product-card"
+                                     onclick="openProduct(@product.ProductId)">
+
+                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                    {
+                                        <img src="@Url.Content(product.ImageUrl)"
+                                             class="product-image"
+                                             alt="@product.ProductName" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-placeholder">
+                                            <i class="fa-solid fa-mug-hot"></i>
+                                        </div>
+                                    }
+
+                                    <div class="product-info">
+                                        <div class="product-name">
+                                            @product.ProductName
+                                        </div>
+
+                                        <div class="product-price">
+                                            Từ @minPrice.ToString("N0") đ
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+
+                    <div id="noProduct" class="empty-cart d-none">
+                        Không tìm thấy sản phẩm phù hợp.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- KHU VỰC GIỎ HÀNG -->
+            <div class="col-lg-4">
+
+                <form id="posOrderForm"
+                      method="post"
+                      action="@Url.Action("Create", "Sales")">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           id="CartItemsJson"
+                           name="CartItemsJson" />
+
+                    <div class="panel cart-panel">
+
+                        <div class="section-title">
+                            <i class="fa-solid fa-cart-shopping me-2"></i>
+                            Giỏ hàng
+                            <span class="badge bg-secondary" id="cartCount">0</span>
+                        </div>
+
+                        <div id="cartItems">
+                            <div class="empty-cart">
+                                <i class="fa-solid fa-basket-shopping fa-2x mb-3"></i>
+                                <div>Chưa có sản phẩm</div>
+                                <small>Chọn sản phẩm để thêm vào giỏ hàng</small>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">
+                                Khách hàng
+                            </label>
+
+                            <input type="text"
+                                   id="receiverName"
+                                   name="ReceiverName"
+                                   class="form-control mb-2"
+                                   placeholder="Tên khách hàng" />
+
+                            <input type="text"
+                                   id="receiverPhone"
+                                   name="ReceiverPhone"
+                                   class="form-control"
+                                   placeholder="Số điện thoại" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">
+                                Ghi chú đơn hàng
+                            </label>
+
+                            <textarea id="orderNote"
+                                      name="Note"
+                                      class="form-control"
+                                      rows="2"
+                                      placeholder="Ghi chú..."></textarea>
+                        </div>
+
+                        <div class="total-row">
+                            <span>Tạm tính</span>
+                            <strong id="subTotal">0 đ</strong>
+                        </div>
+
+                        <div class="total-row">
+                            <span>Giảm giá</span>
+                            <strong>0 đ</strong>
+                        </div>
+
+                        <hr />
+
+                        <div class="total-row grand-total">
+                            <span>Tổng cộng</span>
+                            <span id="totalAmount">0 đ</span>
+                        </div>
+                        <!-- PHƯƠNG THỨC THANH TOÁN -->
+                        <div class="payment-section mt-4 p-3"
+                             style="background:#fffaf3; border:1px solid #e5d5c3; border-radius:12px;">
+
+                            <h5 class="mb-3" style="color:#5b3825;">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Thanh toán đơn hàng
+                            </h5>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Phương thức thanh toán
+                                </label>
+
+                                <div class="d-flex flex-wrap gap-3">
+                                    <label class="border rounded p-3 flex-fill"
+                                           style="cursor:pointer; min-width:150px;">
+                                        <input type="radio"
+                                               name="PaymentMethod"
+                                               value="Cash"
+                                               checked />
+                                        <i class="fas fa-money-bill-wave ms-2 me-1"></i>
+                                        Tiền mặt
+                                    </label>
+
+                                    <label class="border rounded p-3 flex-fill"
+                                           style="cursor:pointer; min-width:150px;">
+                                        <input type="radio"
+                                               name="PaymentMethod"
+                                               value="BankTransfer" />
+                                        <i class="fas fa-building-columns ms-2 me-1"></i>
+                                        Chuyển khoản
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-check p-3 border rounded bg-white">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="ConfirmPayment"
+                                       name="ConfirmPayment"
+                                       value="true" />
+
+                                <label class="form-check-label fw-bold"
+                                       for="ConfirmPayment">
+                                    Tôi xác nhận khách hàng đã thanh toán đầy đủ số tiền của đơn hàng.
+                                </label>
+                            </div>
+
+                            <small class="text-danger d-block mt-2">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                Bắt buộc xác nhận đã nhận đủ tiền trước khi lưu đơn hàng.
+                            </small>
+                        </div>
+                        <button type="submit"
+                                class="btn btn-brown w-100 mt-3">
+                            <i class="fa-solid fa-check me-2"></i>
+                            Xác nhận thanh toán và tạo đơn
+                        </button>
+
+                    </div>
+
+                </form>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL CHỌN SIZE VÀ TOPPING -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="modalProductName">
+                        Chọn sản phẩm
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" id="selectedProductId" />
+
+                    <label class="form-label fw-bold">Kích cỡ</label>
+                    <div id="sizeOptions" class="row g-2 mb-3"></div>
+
+                    <label class="form-label fw-bold">Topping</label>
+                    <div id="toppingOptions" class="mb-3">
+                        <small class="text-muted">
+                            Sản phẩm chưa có topping.
+                        </small>
+                    </div>
+
+                    <label class="form-label fw-bold">Số lượng</label>
+                    <input type="number"
+                           id="productQuantity"
+                           class="form-control"
+                           value="1"
+                           min="1" />
+
+                    <label class="form-label fw-bold mt-3">Ghi chú</label>
+                    <textarea id="productNote"
+                              class="form-control"
+                              rows="2"
+                              placeholder="Ít đá, ít đường..."></textarea>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button class="btn btn-brown"
+                            onclick="addToCart()">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        Thêm vào giỏ
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const products = @Html.Raw(
+            System.Web.Helpers.Json.Encode(Model.Products)
+        );
+
+        let cart = [];
+        let currentProduct = null;
+        let selectedSize = null;
+
+        const productModal = new bootstrap.Modal(
+            document.getElementById('productModal')
+        );
+
+        function formatMoney(value) {
+            return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+        }
+
+        function filterCategory(categoryId, button) {
+            document.querySelectorAll('.category-btn')
+                .forEach(x => x.classList.remove('active'));
+
+            button.classList.add('active');
+
+            document.querySelectorAll('.product-item').forEach(item => {
+                const match = categoryId == 0 ||
+                    item.dataset.category == categoryId;
+
+                item.classList.toggle('d-none', !match);
+            });
+
+            updateNoProduct();
+        }
+
+        document.getElementById('searchProduct')
+            .addEventListener('input', function () {
+                const keyword = this.value.toLowerCase().trim();
+
+                document.querySelectorAll('.product-item').forEach(item => {
+                    const match = item.dataset.name.includes(keyword);
+                    item.classList.toggle('d-none', !match);
+                });
+
+                updateNoProduct();
+            });
+
+        function updateNoProduct() {
+            const visible = document.querySelectorAll(
+                '.product-item:not(.d-none)'
+            ).length;
+
+            document.getElementById('noProduct')
+                .classList.toggle('d-none', visible > 0);
+        }
+
+        function openProduct(productId) {
+            currentProduct = products.find(p => p.ProductId === productId);
+
+            if (!currentProduct) return;
+
+            selectedSize = null;
+
+            document.getElementById('selectedProductId').value = productId;
+            document.getElementById('modalProductName').innerText =
+                currentProduct.ProductName;
+
+            document.getElementById('productQuantity').value = 1;
+            document.getElementById('productNote').value = '';
+
+            renderSizes();
+            renderToppings();
+
+            productModal.show();
+        }
+
+        function renderSizes() {
+            const container = document.getElementById('sizeOptions');
+            container.innerHTML = '';
+
+            currentProduct.Sizes.forEach((size, index) => {
+                const col = document.createElement('div');
+                col.className = 'col-4';
+
+                col.innerHTML = `
+                    <div class="size-option ${index === 0 ? 'selected' : ''}"
+                         onclick="selectSize(${size.ProductSizeId})">
+                        <div class="fw-bold">${size.SizeName}</div>
+                        <small>${formatMoney(size.Price)}</small>
+                    </div>
+                `;
+
+                container.appendChild(col);
+            });
+
+            if (currentProduct.Sizes.length > 0) {
+                selectedSize = currentProduct.Sizes[0];
+            }
+        }
+
+        function selectSize(productSizeId) {
+            selectedSize = currentProduct.Sizes.find(
+                s => s.ProductSizeId === productSizeId
+            );
+
+            document.querySelectorAll('.size-option')
+                .forEach(x => x.classList.remove('selected'));
+
+            event.currentTarget.classList.add('selected');
+        }
+
+        function renderToppings() {
+            const container = document.getElementById('toppingOptions');
+            container.innerHTML = '';
+
+            if (!currentProduct.Toppings ||
+                currentProduct.Toppings.length === 0) {
+                container.innerHTML =
+                    '<small class="text-muted">Không có topping.</small>';
+                return;
+            }
+
+            currentProduct.Toppings.forEach(topping => {
+                const label = document.createElement('label');
+                label.className =
+                    'd-flex justify-content-between align-items-center border-bottom py-2';
+
+                label.innerHTML = `
+                    <span>
+                        <input type="checkbox"
+                               class="form-check-input topping-check me-2"
+                               value="${topping.ToppingId}">
+                        ${topping.ToppingName}
+                    </span>
+                    <strong>${formatMoney(topping.Price)}</strong>
+                `;
+
+                container.appendChild(label);
+            });
+        }
+
+        function addToCart() {
+            if (!selectedSize) {
+                alert('Vui lòng chọn kích cỡ sản phẩm.');
+                return;
+            }
+
+            const quantity = parseInt(
+                document.getElementById('productQuantity').value
+            );
+
+            if (!Number.isInteger(quantity) || quantity < 1) {
+                alert('Số lượng phải lớn hơn 0.');
+                return;
+            }
+
+            const selectedToppingIds = Array.from(
+                document.querySelectorAll('.topping-check:checked')
+            ).map(x => parseInt(x.value));
+
+            const selectedToppings = currentProduct.Toppings.filter(
+                t => selectedToppingIds.includes(t.ToppingId)
+            );
+
+            const key = currentProduct.ProductId + '-' +
+                selectedSize.ProductSizeId + '-' +
+                selectedToppingIds.sort((a,b) => a-b).join(',');
+
+            const existing = cart.find(x => x.Key === key);
+
+            if (existing) {
+                existing.Quantity += quantity;
+            } else {
+                cart.push({
+                    Key: key,
+                    ProductId: currentProduct.ProductId,
+                    ProductSizeId: selectedSize.ProductSizeId,
+                    ProductName: currentProduct.ProductName,
+                    SizeName: selectedSize.SizeName,
+                    UnitPrice: selectedSize.Price,
+                    Quantity: quantity,
+                    Note: document.getElementById('productNote').value,
+                    Toppings: selectedToppings
+                });
+            }
+
+            renderCart();
+            productModal.hide();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fa-solid fa-basket-shopping fa-2x mb-3"></i>
+                        <div>Chưa có sản phẩm</div>
+                    </div>
+                `;
+            }
+
+            cart.forEach(item => {
+                const toppingTotal = item.Toppings.reduce(
+                    (sum, t) => sum + t.Price, 0
+                );
+
+                const lineTotal =
+                    (item.UnitPrice + toppingTotal) * item.Quantity;
+
+                const toppingText = item.Toppings.map(
+                    t => t.ToppingName
+                ).join(', ');
+
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div class="fw-bold">${item.ProductName}</div>
+                        <strong>${formatMoney(lineTotal)}</strong>
+                    </div>
+
+                    <small class="text-muted">
+                        Size ${item.SizeName}
+                        ${toppingText ? ' · ' + toppingText : ''}
+                    </small>
+
+                    ${item.Note ? `<div class="small text-muted">Ghi chú: ${item.Note}</div>` : ''}
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    onclick="changeQuantity('${item.Key}', -1)">−</button>
+
+                            <span class="mx-2">${item.Quantity}</span>
+
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    onclick="changeQuantity('${item.Key}', 1)">+</button>
+                        </div>
+
+                        <button class="btn btn-sm btn-outline-danger"
+                                onclick="removeItem('${item.Key}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(div);
+            });
+
+            const count = cart.reduce((sum, x) => sum + x.Quantity, 0);
+
+            const total = cart.reduce((sum, item) => {
+                const toppingTotal = item.Toppings.reduce(
+                    (s, t) => s + t.Price, 0
+                );
+
+                return sum +
+                    (item.UnitPrice + toppingTotal) * item.Quantity;
+            }, 0);
+
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('subTotal').innerText = formatMoney(total);
+            document.getElementById('totalAmount').innerText = formatMoney(total);
+        }
+
+        function changeQuantity(key, amount) {
+            const item = cart.find(x => x.Key === key);
+            if (!item) return;
+
+            item.Quantity += amount;
+
+            if (item.Quantity <= 0) {
+                removeItem(key);
+                return;
+            }
+
+            renderCart();
+        }
+
+        function removeItem(key) {
+            cart = cart.filter(x => x.Key !== key);
+            renderCart();
+        }
+        // GỬI DỮ LIỆU GIỎ HÀNG KHI TẠO ĐƠN
+        document.getElementById('posOrderForm')
+            .addEventListener('submit', function (e) {
+
+                // Không cho tạo đơn khi giỏ hàng trống
+                if (cart.length === 0) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn ít nhất một sản phẩm.');
+                    return;
+                }
+
+                // Kiểm tra thông tin khách hàng
+                const receiverName =
+                    document.getElementById('receiverName').value.trim();
+
+                const receiverPhone =
+                    document.getElementById('receiverPhone').value.trim();
+
+                if (!receiverName || !receiverPhone) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập tên và số điện thoại khách hàng.');
+                    return;
+                }
+
+                // Bắt buộc xác nhận đã thanh toán
+                const confirmed =
+                    document.getElementById('ConfirmPayment').checked;
+
+                if (!confirmed) {
+                    e.preventDefault();
+                    alert('Bạn phải xác nhận đã nhận đủ tiền trước khi tạo đơn.');
+                    return;
+                }
+
+                // Lấy phương thức thanh toán
+                const paymentMethod =
+                    document.querySelector(
+                        'input[name="PaymentMethod"]:checked'
+                    );
+
+                if (!paymentMethod) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn phương thức thanh toán.');
+                    return;
+                }
+
+                // Gửi dữ liệu giỏ hàng sang Controller
+                const submitCart = cart.map(item => ({
+                    ProductId: item.ProductId,
+                    ProductSizeId: item.ProductSizeId,
+                    Quantity: item.Quantity,
+                    Note: item.Note,
+                    ToppingIds: item.Toppings.map(t => t.ToppingId)
+                }));
+
+                document.getElementById('CartItemsJson').value =
+                    JSON.stringify(submitCart);
+            });
+    </script>
+
+</body>
+</html>

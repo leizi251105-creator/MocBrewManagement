@@ -1,0 +1,727 @@
+﻿
+@model MocBrewManagement.ViewModels.POSOrderDetailViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Chi tiết đơn bán - MỘC BREW";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewBag.Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: #f7f4ef;
+            color: #38271e;
+        }
+
+        .topbar {
+            background: #38271e;
+            color: white;
+            padding: 22px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .topbar a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .content {
+            padding: 35px;
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        .back-link {
+            color: #795238;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .back-link:hover {
+                color: #38271e;
+            }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            margin: 25px 0;
+        }
+
+        .detail-card {
+            background: white;
+            border: 1px solid #eee5dc;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #795238;
+            margin-bottom: 22px;
+        }
+
+        .info-label {
+            color: #927965;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #38271e;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .order-code {
+            color: #795238;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pending {
+            background: #fff2d6;
+            color: #9a6900;
+        }
+
+        .confirmed {
+            background: #e1efff;
+            color: #2463a5;
+        }
+
+        .preparing {
+            background: #f0e6ff;
+            color: #7040a0;
+        }
+
+        .completed {
+            background: #e0f3e7;
+            color: #287744;
+        }
+
+        .cancelled {
+            background: #fbe5e3;
+            color: #b13b32;
+        }
+
+        .default-status {
+            background: #eee9e4;
+            color: #66564a;
+        }
+
+        .table {
+            vertical-align: middle;
+            margin-bottom: 0;
+        }
+
+            .table thead th {
+                background: #f4e9df;
+                color: #59402e;
+                padding: 14px 12px;
+                white-space: nowrap;
+            }
+
+            .table tbody td {
+                padding: 15px 12px;
+                border-color: #f0e9e2;
+            }
+
+        .total-price {
+            color: #795238;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .total-box {
+            max-width: 400px;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            color: #594536;
+        }
+
+        .grand-total {
+            border-top: 1px solid #eee5dc;
+            margin-top: 10px;
+            padding-top: 18px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #795238;
+        }
+
+        .btn-brown {
+            background: #795238;
+            border: 1px solid #795238;
+            color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+
+            .btn-brown:hover {
+                background: #38271e;
+                color: white;
+            }
+
+        .note-box {
+            background: #fcfaf7;
+            border: 1px solid #eee5dc;
+            border-radius: 9px;
+            padding: 14px;
+            color: #594536;
+        }
+
+        @@media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .topbar {
+                padding: 18px 20px;
+            }
+
+            .detail-card {
+                padding: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="brand">MỘC BREW</div>
+
+        <a href="@Url.Action("Index", "Home")">
+            <i class="fa-solid fa-house me-2"></i>
+            Trang chủ
+        </a>
+    </header>
+
+    <main class="content">
+
+        <a href="@Url.Action("OrderList", "Sales")" class="back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Quay lại danh sách đơn bán
+        </a>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                @TempData["Success"]
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                @TempData["Error"]
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
+        }
+        <h2 class="page-title">
+            <i class="fa-solid fa-receipt me-2"></i>
+            Chi tiết đơn bán
+        </h2>
+
+        <!-- CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG -->
+        @if (ViewBag.CanUpdateStatus == true &&
+     (Model.OrderStatus == "Pending" ||
+      Model.OrderStatus == "Confirmed" ||
+      Model.OrderStatus == "Preparing"))
+        {
+            string nextStatus = "";
+
+            string nextStatusName = "";
+
+            if (Model.OrderStatus == "Pending")
+            {
+                nextStatus = "Confirmed";
+                nextStatusName = "Đã xác nhận";
+            }
+            else if (Model.OrderStatus == "Confirmed")
+            {
+                nextStatus = "Preparing";
+                nextStatusName = "Đang pha chế";
+            }
+            else if (Model.OrderStatus == "Preparing")
+            {
+                nextStatus = "Completed";
+                nextStatusName = "Hoàn thành";
+            }
+
+            <div class="detail-card">
+
+                <h5 class="section-title">
+                    <i class="fa-solid fa-arrows-rotate me-2"></i>
+                    Cập nhật trạng thái đơn hàng
+                </h5>
+
+                <div class="mb-3">
+                    <div class="info-label">Trạng thái hiện tại</div>
+                    <div class="info-value">@Model.OrderStatus</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="info-label">Trạng thái tiếp theo</div>
+                    <div class="info-value">@nextStatusName</div>
+                </div>
+
+                <form method="post"
+                      action="@Url.Action("UpdateOrderStatus", "Sales")">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.OrderId" />
+
+                    <input type="hidden"
+                           name="newStatus"
+                           value="@nextStatus" />
+
+                    <button type="submit"
+                            class="btn-brown"
+                            onclick="return confirm('Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng?');">
+
+                        <i class="fa-solid fa-check me-2"></i>
+                        Chuyển sang @nextStatusName
+                    </button>
+
+                </form>
+
+            </div>
+        }
+
+        <!-- THÔNG TIN ĐƠN HÀNG -->
+        <div class="detail-card">
+
+            <h5 class="section-title">Thông tin đơn hàng</h5>
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <div class="info-label">Mã đơn hàng</div>
+                    <div class="info-value order-code">@Model.OrderCode</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Ngày tạo</div>
+                    <div class="info-value">
+                        @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Nguồn đơn</div>
+                    <div class="info-value">
+                        @(Model.OrderSource == "POS" ? "Bán tại quầy (POS)" : Model.OrderSource)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Hình thức nhận hàng</div>
+                    <div class="info-value">
+                        @(Model.FulfillmentMethod == "PICKUP" ? "Nhận tại quán" :
+                          Model.FulfillmentMethod == "DELIVERY" ? "Giao hàng" :
+                          Model.FulfillmentMethod)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Trạng thái đơn hàng</div>
+                    <div class="info-value">
+                        @if (Model.OrderStatus == "Pending")
+                        {
+                            <span class="status-badge pending">Chờ xử lý</span>
+                        }
+                        else if (Model.OrderStatus == "Confirmed")
+                        {
+                            <span class="status-badge confirmed">Đã xác nhận</span>
+                        }
+                        else if (Model.OrderStatus == "Preparing")
+                        {
+                            <span class="status-badge preparing">Đang pha chế</span>
+                        }
+                        else if (Model.OrderStatus == "Completed")
+                        {
+                            <span class="status-badge completed">Hoàn thành</span>
+                        }
+                        else if (Model.OrderStatus == "Cancelled")
+                        {
+                            <span class="status-badge cancelled">Đã hủy</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge default-status">@Model.OrderStatus</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Ghi chú đơn hàng</div>
+                    <div class="info-value">
+                        @(string.IsNullOrWhiteSpace(Model.Note) ? "Không có ghi chú" : Model.Note)
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- THÔNG TIN KHÁCH HÀNG -->
+        <div class="detail-card">
+
+            <h5 class="section-title">
+                <i class="fa-solid fa-user me-2"></i>
+                Thông tin khách hàng
+            </h5>
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <div class="info-label">Tên người nhận</div>
+                    <div class="info-value">@Model.ReceiverName</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Số điện thoại</div>
+                    <div class="info-value">@Model.ReceiverPhone</div>
+                </div>
+
+                @if (Model.FulfillmentMethod == "DELIVERY")
+                {
+                    <div class="col-12">
+                        <div class="info-label">Địa chỉ giao hàng</div>
+                        <div class="info-value">
+                            @(string.IsNullOrWhiteSpace(Model.DeliveryAddress)
+                                ? "Chưa có địa chỉ"
+                                : Model.DeliveryAddress)
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <!-- CHI TIẾT SẢN PHẨM -->
+        <div class="detail-card">
+
+            <h5 class="section-title">
+                <i class="fa-solid fa-mug-hot me-2"></i>
+                Chi tiết sản phẩm
+            </h5>
+
+            <div class="table-responsive">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Sản phẩm</th>
+                            <th>Kích cỡ</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            var index = 0;
+
+                            foreach (var item in Model.Items)
+                            {
+                                index++;
+
+                                <tr>
+                                    <td>@index</td>
+
+                                    <td>
+                                        <strong>@item.ProductName</strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Note))
+                                        {
+                                            <div class="info-label mt-1">
+                                                Ghi chú: @item.Note
+                                            </div>
+                                        }
+
+                                        @if (item.Toppings != null && item.Toppings.Any())
+                                        {
+                                            <div class="mt-2">
+                                                <small class="text-muted">Topping:</small>
+
+                                                @foreach (var topping in item.Toppings)
+                                                {
+                                                    <div class="small">
+                                                        + @topping.ToppingName
+                                                        (x@topping.Quantity)
+                                                        - @((topping.UnitPrice * topping.Quantity).ToString("N0")) đ
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>@(string.IsNullOrWhiteSpace(item.SizeName) ? "Không có" : item.SizeName)</td>
+
+                                    <td>@item.UnitPrice.ToString("N0") đ</td>
+
+                                    <td>@item.Quantity</td>
+
+                                    <td class="total-price">
+                                        @item.TotalPrice.ToString("N0") đ
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    Không có sản phẩm trong đơn hàng.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+            <!-- TỔNG TIỀN -->
+            <div class="total-box mt-4">
+
+                <div class="total-row">
+                    <span>Tạm tính</span>
+                    <strong>@Model.SubTotal.ToString("N0") đ</strong>
+                </div>
+
+                <div class="total-row">
+                    <span>Giảm giá</span>
+                    <strong>@Model.DiscountAmount.ToString("N0") đ</strong>
+                </div>
+
+                <div class="total-row">
+                    <span>Phí giao hàng</span>
+                    <strong>@Model.ShippingFee.ToString("N0") đ</strong>
+                </div>
+
+                <div class="total-row grand-total">
+                    <span>Tổng thanh toán</span>
+                    <span>@Model.TotalAmount.ToString("N0") đ</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- THANH TOÁN -->
+        <div class="detail-card">
+
+            <h5 class="section-title">
+                <i class="fa-solid fa-credit-card me-2"></i>
+                Thông tin thanh toán
+            </h5>
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <div class="info-label">Phương thức thanh toán</div>
+                    <div class="info-value">
+                        @(Model.PaymentMethod == "Cash" ? "Tiền mặt" :
+                          Model.PaymentMethod == "BankTransfer" ? "Chuyển khoản" :
+                          Model.PaymentMethod)
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Trạng thái thanh toán</div>
+                    <div class="info-value">
+                        @if (Model.PaymentStatus == "Paid")
+                        {
+                            <span class="text-success fw-bold">
+                                <i class="fa-solid fa-circle-check me-1"></i>
+                                Đã thanh toán
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-warning fw-bold">
+                                <i class="fa-solid fa-clock me-1"></i>
+                                Chưa thanh toán
+                            </span>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <a href="@Url.Action("OrderList", "Sales")" class="btn-brown">
+                <i class="fa-solid fa-arrow-left me-2"></i>
+                Quay lại danh sách đơn
+            </a>
+        </div>
+
+        @{
+            var orderHistory =
+                ViewBag.OrderHistory as
+                List<MocBrewManagement.ViewModels.POSOrderHistoryViewModel>;
+        }
+
+        <!-- YÊU CẦU HỦY ĐƠN / HOÀN TIỀN -->
+        @if (ViewBag.CanRequestCancel == true ||
+             ViewBag.CanRequestRefund == true)
+        {
+            <div class="detail-card mt-4">
+
+                <h5 class="section-title">
+                    <i class="fa-solid fa-file-circle-exclamation me-2"></i>
+                    Yêu cầu hủy đơn / hoàn tiền
+                </h5>
+
+                <p class="text-muted">
+                    Gửi yêu cầu đến Super Admin để xem xét và phê duyệt.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    @if (ViewBag.CanRequestCancel == true)
+                    {
+                        <a href="@Url.Action("CreateOrderRequest", "Sales",
+                    new { id = Model.OrderId, requestType = "Cancel" })"
+                           class="btn btn-outline-danger">
+                            <i class="fa-solid fa-ban me-2"></i>
+                            Yêu cầu hủy đơn
+                        </a>
+                    }
+
+                    @if (ViewBag.CanRequestRefund == true)
+                    {
+                        <a href="@Url.Action("CreateOrderRequest", "Sales",
+                    new { id = Model.OrderId, requestType = "Refund" })"
+                           class="btn btn-outline-warning">
+                            <i class="fa-solid fa-money-bill-transfer me-2"></i>
+                            Yêu cầu hoàn tiền
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+        }
+
+        <!-- LỊCH SỬ XỬ LÝ ĐƠN HÀNG -->
+        <div class="detail-card mt-4">
+            <h5 class="section-title">
+                <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                Lịch sử xử lý đơn hàng
+            </h5>
+
+            @if (orderHistory != null && orderHistory.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Trạng thái trước</th>
+                                <th>Trạng thái sau</th>
+                                <th>Người thực hiện</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var history in orderHistory)
+                            {
+                                <tr>
+                                    <td>
+                                        @history.ChangedAt.ToString("dd/MM/yyyy HH:mm:ss")
+                                    </td>
+
+                                    <td>
+                                        @(history.OldStatus ?? "Khởi tạo")
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            @history.NewStatus
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        @history.EmployeeName
+                                    </td>
+
+                                    <td>
+                                        @(history.Note ?? "Không có ghi chú")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4 text-muted">
+                    <i class="fa-solid fa-clock fa-2x mb-2"></i>
+                    <p class="mb-0">
+                        Đơn hàng chưa có lịch sử cập nhật trạng thái.
+                    </p>
+                </div>
+            }
+        </div>
+
+    </main>
+
+</body>
+</html>
